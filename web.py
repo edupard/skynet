@@ -8,7 +8,9 @@ from tickers import get_tickers
 app = Flask(__name__)
 api = Api(app=app)
 ns_tasks = api.namespace('tasks', description='Operations')
-app.run(debug=True)
+
+if __name__ == "__main__":
+  app.run(debug=True)
 
 
 @ns_tasks.route('/download')
