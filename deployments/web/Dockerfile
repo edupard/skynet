@@ -10,7 +10,7 @@ ADD . /app
 RUN pip install -r /app/requirements.txt
 
 WORKDIR /app
-RUN PWD
+RUN pwd & ls & pip --version & whereis flask
 ENV FLASK_APP web.py
 EXPOSE 5000/tcp
 ENTRYPOINT ["flask"]
