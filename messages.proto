@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+message StockData {
+  double o = 1;
+  double h = 2;
+  double l = 3;
+  double c = 4;
+  double v = 5;
+  double a_o = 6;
+  double a_h = 7;
+  double a_l = 8;
+  double a_c = 9;
+  double a_v = 10;
+  double div = 11;
+  double split = 12;
+}
+
+message DailyData {
+  int32 date = 1;
+  map<string, StockData> data = 2;
+}
+
+message Chunk {
+  int32 year = 1;
+  int32 month = 2;
+  map<int32, DailyData> dailyChunks = 3;
+}

@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: worker
+  labels:
+    app: worker
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: worker
+  template:
+    metadata:
+      labels:
+        app: worker
+    spec:
+      volumes:
+        - name: secret-volume
+          secret:
+            secretName: hinton-svc-key
+      containers:
+        - name: worker
+          image: gcr.io/skynet-1984/worker:_COMMIT_SHA
+          volumeMounts:
+            - name: secret-volume
+              readOnly: true
+              mountPath: "/etc/secret-volume"
+          ports:
+            - containerPort: 5000
+          env:
+            - name: GOOGLE_APPLICATION_CREDENTIALS
+              value: /etc/secret-volume/key
+            - name: RMQ_UNM
+              valueFrom:
+                secretKeyRef:
+                  name: rmq-credentials
+                  key: username
+            - name: RMQ_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: rmq-config
+                  key: host
+            - name: RMQ_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: rmq-config
+                  key: port
+            - name: RMQ_PWD
+              valueFrom:
+                secretKeyRef:
+                  name: rmq-credentials
+                  key: password
+            - name: TIINGO_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: tiingo-credentials
+                  key: token
