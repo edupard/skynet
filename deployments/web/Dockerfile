@@ -1,16 +1,19 @@
 FROM gcr.io/google-appengine/python
 
-ADD . /app/
+RUN virtualenv -p python3.7 /env
 
-RUN virtualenv --python=python3.6 env
 ENV VIRTUAL_ENV /env
 ENV PATH /env/bin:$PATH
 
-RUN echo $VIRTUAL_ENV
-RUN echo $PATH
 RUN pip --version
 RUN whereis python
-RUN pip install -r requirements.txt
+
+ADD . /app
+
+RUN pip install -r /app/requirements.txt
+
+RUN whereis flask
+
 ENV FLASK_APP web.py
 EXPOSE 5000/tcp
 ENTRYPOINT ["flask"]
