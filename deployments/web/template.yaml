@@ -30,7 +30,7 @@ spec:
           env:
             - name: GOOGLE_APPLICATION_CREDENTIALS
               value: /etc/secret-volume/key
-            - name: RMQ_USERNAME
+            - name: RMQ_UNM
               valueFrom:
                 secretKeyRef:
                   name: rmq-credentials
@@ -45,7 +45,7 @@ spec:
                 configMapKeyRef:
                   name: rmq-config
                   key: port
-            - name: RMQ_PASSWORD
+            - name: RMQ_PWD
               valueFrom:
                 secretKeyRef:
                   name: rmq-credentials
