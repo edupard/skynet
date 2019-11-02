@@ -9,7 +9,6 @@ import datetime
 
 db = datastore.Client('skynet-1984')
 
-
 def publish_chunks(tickers):
     chunks = {}
 

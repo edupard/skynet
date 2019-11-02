@@ -1,10 +1,12 @@
 import os
 
+
 class Config(object):
     RMQ_UNM = ""
     RMQ_PWD = ""
     RMQ_HOST = ""
     RMQ_PORT = 0
+
 
 _config = Config()
 _config.RMQ_UNM = os.environ['RMQ_UNM']

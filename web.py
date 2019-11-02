@@ -1,9 +1,8 @@
 from flask import Flask
 from flask_restplus import Api, Resource
-from env import get_env_variables
-from rmq import publish_strings
-from tickers import get_tickers
-
+from utils.env import get_env_variables
+from utils.rmq import publish_strings
+from utils.tiingo import get_tickers
 
 app = Flask(__name__)
 api = Api(app=app)

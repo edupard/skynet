@@ -1,20 +1,23 @@
 import pika
 from functools import partial
-from config import get_config
+from utils.config import get_config
 from queue import Queue
 import threading
+
 
 def _get_connection_parameters():
     config = get_config()
     credentials = pika.PlainCredentials(config.RMQ_UNM, config.RMQ_PWD)
     return pika.ConnectionParameters(config.RMQ_HOST,
-                                           config.RMQ_PORT,
-                                           '/',
-                                           credentials)
+                                     config.RMQ_PORT,
+                                     '/',
+                                     credentials)
+
 
 def _get_blocking_rmq_connection():
     parameters = _get_connection_parameters()
     return pika.BlockingConnection(parameters)
+
 
 def publish_strings(messages, exchange, routing_key):
     connection = _get_blocking_rmq_connection()
@@ -26,6 +29,7 @@ def publish_strings(messages, exchange, routing_key):
 
     connection.close()
 
+
 class StoppedFlag:
     stopped = False
 
@@ -35,12 +39,15 @@ class StoppedFlag:
     def stop(self):
         self.stopped = True
 
+
 class HandlerInfo(object):
     PrefetchCount = None
     Handler = None
+
     def __init__(self, prefetchCount, handler):
         self.PrefetchCount = prefetchCount
         self.Handler = handler
+
 
 class Consumer(object):
     queue_handlers = None
@@ -59,7 +66,8 @@ class Consumer(object):
 
     def on_channel_open(self, queue_name, handler_info, channel):
         work_queue = Queue()
-        self.start_worker(channel, self.stopped_flag, work_queue, batch_size=handler_info.PrefetchCount, handler=handler_info.Handler)
+        self.start_worker(channel, self.stopped_flag, work_queue, batch_size=handler_info.PrefetchCount,
+                          handler=handler_info.Handler)
         channel.basic_qos(prefetch_count=handler_info.PrefetchCount)
         channel.basic_consume(queue_name, partial(self.on_message, queue_name, handler_info, work_queue))
 
@@ -97,7 +105,8 @@ class Consumer(object):
                      work_queue: Queue,
                      batch_size,
                      handler):
-        send_thread = threading.Thread(target=self.worker, args=[channel, stopped_flag, work_queue, batch_size, handler])
+        send_thread = threading.Thread(target=self.worker,
+                                       args=[channel, stopped_flag, work_queue, batch_size, handler])
         send_thread.start()
 
     def start(self):

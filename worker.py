@@ -1,8 +1,7 @@
-from rmq import Consumer, HandlerInfo
+from utils.rmq import Consumer, HandlerInfo
 from download import download_tickers
 from transpose import publish_chunks
 from preprocess import preprocess_tickers
-from transpose_glue import collect_month_data
 
 consumer = Consumer(
         {
