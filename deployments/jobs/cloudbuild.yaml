@@ -1,17 +1,24 @@
+# multiple containers defined here
 steps:
 - name: 'gcr.io/cloud-builders/docker'
-  args: [ 'build', '-f', 'deployments/worker/Dockerfile', '-t', 'gcr.io/$PROJECT_ID/worker:$COMMIT_SHA', '.' ]
-- name: 'gcr.io/cloud-builders/docker'
-  args: ['push', 'gcr.io/$PROJECT_ID/worker:$COMMIT_SHA']
+  entrypoint: bash
+  args:
+    - '-c'
+    - |
+      sed -e "s|_SCRIPT|job_test|g" deployments/jobs/Dockerfile | tee Dockerfile
+      cat job_test.yaml
+      docker build -f Dockerfile -t gcr.io/$PROJECT_ID/job_test:$COMMIT_SHA .
+      docker push gcr.io/$PROJECT_ID/job_test:$COMMIT_SHA
+# kubectl - deploy containers
 - name: 'gcr.io/cloud-builders/kubectl'
   entrypoint: bash
   args:
     - '-c'
     - |
-      sed -e "s|_COMMIT_SHA|$COMMIT_SHA|g" deployments/worker/template.yaml | tee deployment.yaml
       gcloud container clusters get-credentials --project="skynet-1984" --zone="us-central1-a" "virgo"
-      cat worker.yaml
-      kubectl apply -f - <deployment.yaml
+      sed -e "s|_COMMIT_SHA|$COMMIT_SHA|g" -e "s|_JOB|test|g" deployments/jobs/template.yaml | tee job_test.yaml
+      cat job_test.yaml
+      kubectl apply -f - <job_test.yaml
   env:
     - 'CLOUDSDK_COMPUTE_ZONE=us-central1-a'
     - 'CLOUDSDK_CONTAINER_CLUSTER=virgo'

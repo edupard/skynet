@@ -1,18 +1,18 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: worker
+  name: _JOB
   labels:
-    app: worker
+    app: _JOB
 spec:
   replicas: 0
   selector:
     matchLabels:
-      app: worker
+      app: _JOB
   template:
     metadata:
       labels:
-        app: worker
+        app: _JOB
     spec:
       volumes:
         - name: secret-volume
