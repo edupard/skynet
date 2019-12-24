@@ -3,6 +3,7 @@ from flask_restplus import Api, Resource
 from utils.env import get_env_variables
 from utils.rmq import publish_strings
 from utils.tiingo import get_tickers
+from abstraction.job_queue import push_job_queue_items
 
 app = Flask(__name__)
 api = Api(app=app)
@@ -16,7 +17,8 @@ if __name__ == "__main__":
 class Download(Resource):
     def get(self):
         tickers = get_tickers()
-        publish_strings(tickers, 'tasks', 'download')
+        push_job_queue_items("download", tickers)
+        # publish_strings(tickers, 'tasks', 'download')
         return 'Success'
 
 @ns_tasks.route('/enrich')

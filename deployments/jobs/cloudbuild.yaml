@@ -5,10 +5,10 @@ steps:
   args:
     - '-c'
     - |
-      sed -e "s|_SCRIPT|job_test|g" deployments/jobs/Dockerfile | tee Dockerfile
-      cat job_test.yaml
-      docker build -f Dockerfile -t gcr.io/$PROJECT_ID/job_test:$COMMIT_SHA .
-      docker push gcr.io/$PROJECT_ID/job_test:$COMMIT_SHA
+      sed -e "s|_SCRIPT|job_download|g" deployments/jobs/Dockerfile | tee job_download_dockerfile
+      cat Dockerfile
+      docker build -f job_download_dockerfile -t gcr.io/$PROJECT_ID/job_download:$COMMIT_SHA .
+      docker push gcr.io/$PROJECT_ID/job_download:$COMMIT_SHA
 # kubectl - deploy containers
 - name: 'gcr.io/cloud-builders/kubectl'
   entrypoint: bash
@@ -16,9 +16,9 @@ steps:
     - '-c'
     - |
       gcloud container clusters get-credentials --project="skynet-1984" --zone="us-central1-a" "virgo"
-      sed -e "s|_COMMIT_SHA|$COMMIT_SHA|g" -e "s|_JOB|test|g" deployments/jobs/template.yaml | tee job_test.yaml
-      cat job_test.yaml
-      kubectl apply -f - <job_test.yaml
+      sed -e "s|_COMMIT_SHA|$COMMIT_SHA|g" -e "s|_SERVICE|job_download|g" deployments/jobs/workload.yaml | tee job_download.yaml
+      cat job_download.yaml
+      kubectl apply -f - <job_download.yaml
   env:
     - 'CLOUDSDK_COMPUTE_ZONE=us-central1-a'
     - 'CLOUDSDK_CONTAINER_CLUSTER=virgo'
