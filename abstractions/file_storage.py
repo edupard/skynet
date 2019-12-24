@@ -1,7 +1,7 @@
 from google.cloud import storage
 import os
 import tempfile
-import abstraction.gcp_constants as constants
+import abstractions.gcp_constants as constants
 
 storage_client = storage.Client()
 bucket = storage_client.get_bucket(constants.BUCKET_NAME)
@@ -18,4 +18,4 @@ def get_file(remote_file_path):
     fd, tmp_file_name = tempfile.mkstemp()
     os.close(fd)
     blob.download_to_filename(tmp_file_name)
-    return tempfile
+    return tmp_file_name

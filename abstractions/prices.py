@@ -2,7 +2,10 @@ from tiingo import TiingoClient
 import csv
 import tempfile
 import os
+import pandas as pd
+import abstractions.constants as constants
 
+TICKER_COLUMN = "ticker"
 
 def _get_tiingo_client() -> TiingoClient:
     tiingo_config = {}
@@ -11,11 +14,15 @@ def _get_tiingo_client() -> TiingoClient:
     return TiingoClient(tiingo_config)
 
 
-def _make_tiingo_request(client: TiingoClient, ticker):
-    return client.get_ticker_price(ticker,
-                                   fmt='json',
-                                   startDate='1980-01-01',
-                                   frequency='daily')
+def get_tickers():
+    client = _get_tiingo_client()
+    tickers = client.list_stock_tickers()
+    matches = [el for el in tickers if
+               (el['exchange'] == "NASDAQ" or el['exchange'] == "NYSE") and el['assetType'] == 'Stock']
+    df = pd.DataFrame(matches, columns=matches[0].keys())
+    df.rename(columns={"ticker": "ticker", "endDate": "endDate","startDate":"startDate","exchange":"exchange", "assetType":"assetType", "priceCurrency": "priceCurrency"})
+    df = df.append({"ticker": "SPY", "endDate": "2019-12-23", "startDate": "1993-01-29", "exchange": "NYSE ARCA", "assetType": "Etf", "priceCurrency":"USD"}, ignore_index=True)
+    return df
 
 
 def _json_to_csv(ticker, json_data):
@@ -45,17 +52,14 @@ def _json_to_csv(ticker, json_data):
     print(f"Data for {ticker} stored in {tmp_file_name}")
     return tmp_file_name
 
+def _make_tiingo_request(client: TiingoClient, ticker):
+    return client.get_ticker_price(ticker,
+                                   fmt='json',
+                                   startDate=constants.S_START_DATE,
+                                   endDate=constants.S_END_DATE,
+                                   frequency='daily')
 
-def download_ticker_data_to_temp_file(ticker):
+def download_daily_data(ticker):
     client = _get_tiingo_client()
     json = _make_tiingo_request(client, ticker)
     return _json_to_csv(ticker, json)
-
-
-def get_tickers():
-    client = _get_tiingo_client()
-    client.list_stock_tickers()
-    tickers = client.list_stock_tickers()
-    matches = [el for el in tickers if
-               (el['exchange'] == "NASDAQ" or el['exchange'] == "NYSE") and el['assetType'] == 'Stock']
-    return matches.append('SPY')

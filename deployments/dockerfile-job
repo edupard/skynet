@@ -18,4 +18,4 @@ WORKDIR /app
 
 # run app
 ENTRYPOINT ["python"]
-CMD ["_SCRIP.py"]
+CMD ["_SCRIPT.py"]

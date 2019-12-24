@@ -1,42 +1,31 @@
 from flask import Flask
 from flask_restplus import Api, Resource
-from utils.env import get_env_variables
-from utils.rmq import publish_strings
-from utils.tiingo import get_tickers
-from abstraction.job_queue import push_job_queue_items
+from env import get_env_variables
+import tickers as tickers
+import scheduler as jobs
 
 app = Flask(__name__)
 api = Api(app=app)
-ns_tasks = api.namespace('tasks', description='Operations')
+ns_tasks = api.namespace('jobs', description='Jobs to perform')
 
 if __name__ == "__main__":
   app.run(debug=True)
 
-
-@ns_tasks.route('/download')
-class Download(Resource):
+@ns_tasks.route('/download_tickers')
+class DownloadTickers(Resource):
     def get(self):
-        tickers = get_tickers()
-        push_job_queue_items("download", tickers)
-        # publish_strings(tickers, 'tasks', 'download')
+        tickers.save_tickers()
         return 'Success'
 
-@ns_tasks.route('/enrich')
-class Enrich(Resource):
-    def get(self):
-        tickers = get_tickers()
-        publish_strings(tickers, 'tasks', 'enrich')
-        return 'Success'
 
-@ns_tasks.route('/transpose')
-class Transpose(Resource):
+@ns_tasks.route('/download_prices')
+class DownloadPrices(Resource):
     def get(self):
-        tickers = get_tickers()
-        publish_strings(tickers, 'tasks', 'transpose')
+        jobs.schedule_download()
         return 'Success'
 
 @ns_tasks.route('/env')
-class Env(Resource):
+class PrintEnvVariables(Resource):
     def get(this):
         vars = [
             'RMQ_HOST',

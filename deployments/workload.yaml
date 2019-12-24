@@ -5,7 +5,7 @@ metadata:
   labels:
     app: _SERVICE
 spec:
-  replicas: 0
+  replicas: _REPLICAS
   selector:
     matchLabels:
       app: _SERVICE
@@ -30,26 +30,6 @@ spec:
           env:
             - name: GOOGLE_APPLICATION_CREDENTIALS
               value: /etc/secret-volume/key
-            - name: RMQ_UNM
-              valueFrom:
-                secretKeyRef:
-                  name: rmq-credentials
-                  key: username
-            - name: RMQ_HOST
-              valueFrom:
-                configMapKeyRef:
-                  name: rmq-config
-                  key: host
-            - name: RMQ_PORT
-              valueFrom:
-                configMapKeyRef:
-                  name: rmq-config
-                  key: port
-            - name: RMQ_PWD
-              valueFrom:
-                secretKeyRef:
-                  name: rmq-credentials
-                  key: password
             - name: TIINGO_API_KEY
               valueFrom:
                 secretKeyRef:

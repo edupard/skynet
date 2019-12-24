@@ -25,12 +25,14 @@ jsonschema==3.1.1
 MarkupSafe==1.1.1
 more-itertools==7.2.0
 numpy==1.17.0
+pandas==0.25.3
 pika==1.1.0
 protobuf==3.9.1
 protobuf3==0.2.1
 pyasn1==0.4.6
 pyasn1-modules==0.2.6
 pyrsistent==0.15.5
+python-dateutil==2.8.1
 pytz==2019.2
 requests==2.22.0
 rsa==4.0
