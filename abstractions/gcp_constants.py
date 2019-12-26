@@ -1,2 +1,0 @@
-PROJECT_NAME = 'skynet-1984'
-BUCKET_NAME = f'{PROJECT_NAME}-data'

@@ -1,5 +1,6 @@
 from google.cloud import pubsub_v1
-import abstractions.gcp_constants as constants
+
+import abstractions.constants as constants
 
 subscriber = pubsub_v1.SubscriberClient()
 

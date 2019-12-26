@@ -24,6 +24,12 @@ class DownloadPrices(Resource):
         jobs.schedule_download()
         return 'Success'
 
+@ns_tasks.route('/transpose_prices')
+class TransposePrices(Resource):
+    def get(self):
+        jobs.schedule_transpose()
+        return 'Success'
+
 @ns_tasks.route('/env')
 class PrintEnvVariables(Resource):
     def get(this):

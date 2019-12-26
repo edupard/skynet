@@ -1,17 +1,17 @@
 from google.cloud import storage
 import os
 import tempfile
-import abstractions.gcp_constants as constants
 
-storage_client = storage.Client()
-bucket = storage_client.get_bucket(constants.BUCKET_NAME)
-
-def put_file(local_file_path, remote_file_path):
-    blob = bucket.blob(remote_file_path)
+def put_file(local_file_path, remote_dir_name, remote_file_name):
+    storage_client = storage.Client()
+    bucket = storage_client.get_bucket(remote_dir_name)
+    blob = bucket.blob(remote_file_name)
     blob.upload_from_filename(local_file_path)
 
-def get_file(remote_file_path):
-    blob = bucket.get_blob(remote_file_path)
+def get_file(remote_dir_name, remote_file_name):
+    storage_client = storage.Client()
+    bucket = storage_client.get_bucket(remote_dir_name)
+    blob = bucket.get_blob(remote_file_name)
     if blob is None:
         return None
 
