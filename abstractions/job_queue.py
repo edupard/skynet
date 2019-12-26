@@ -13,7 +13,7 @@ def ack(queue_name, to_ack):
 
 def pull_job_queue_items(queue_name, max_batch_size):
     subscription_path = subscriber.subscription_path(constants.PROJECT_NAME, queue_name)
-    response = subscriber.pull(subscription_path, max_messages=max_batch_size)
+    response = subscriber.pull(subscription_path, max_messages=max_batch_size, return_immediately=True)
     ack_ids = []
     messages = []
 
