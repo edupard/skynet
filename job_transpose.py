@@ -12,10 +12,7 @@ import uuid
 def write_data(daily_data):
     repo = ChunksRepo()
 
-    total = len(daily_data.values())
-    i = 0
     for date, arr in daily_data.items():
-        i = i + 1
         #y = date // 10000
         #m = (date % 10000) // 100
         #d = (date % 10000) % 100
@@ -46,7 +43,6 @@ def write_data(daily_data):
         file_storage.put_file(tmp_file_name, constants.TEMP_BUCKET_NAME, f"{date}-{sUuid}.csv")
         repo.store_chunk(date, sUuid)
         os.remove(tmp_file_name)
-        print(f"Created {i} of {total}")
 
 def collect_data(ticker, daily_data, data):
     for idx in range(data.shape[0]):
