@@ -12,7 +12,10 @@ import uuid
 def write_data(daily_data):
     repo = ChunksRepo()
 
+    total = len(daily_data.values())
+    i = 0
     for date, arr in daily_data.items():
+        i = i + 1
         #y = date // 10000
         #m = (date % 10000) // 100
         #d = (date % 10000) % 100
@@ -43,6 +46,7 @@ def write_data(daily_data):
         file_storage.put_file(tmp_file_name, constants.TEMP_BUCKET_NAME, f"{date}-{sUuid}.csv")
         repo.store_chunk(date, sUuid)
         os.remove(tmp_file_name)
+        print(f"Created {i} of {total}")
 
 def collect_data(ticker, daily_data, data):
     for idx in range(data.shape[0]):
@@ -76,19 +80,24 @@ while True:
     if len(messages) == 0:
         break
 
+    job_queue.ack(jobs.TRANSPOSE_QUEUE, to_ack)
+
     daily_data = {}
 
     for ticker in messages:
         tmp_file_name = file_storage.get_file(constants.DATA_BUCKET_NAME, f"{ticker}.csv")
+        if tmp_file_name is None:
+            continue
         # read file
         data = np.genfromtxt(tmp_file_name, delimiter=',', skip_header=1)
+        print(f"{ticker}.csv - {tmp_file_name}")
 
         os.remove(tmp_file_name)
 
         if len(data.shape) == 1:
+            file_storage.remove_file(constants.DATA_BUCKET_NAME, f"{ticker}.csv")
             continue
 
         collect_data(ticker, daily_data, data)
     write_data(daily_data)
 
-    job_queue.ack(jobs.DOWNLOAD_QUEUE, to_ack)

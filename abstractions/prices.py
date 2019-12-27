@@ -62,4 +62,6 @@ def _make_tiingo_request(client: TiingoClient, ticker):
 def download_daily_data(ticker):
     client = _get_tiingo_client()
     json = _make_tiingo_request(client, ticker)
+    if len(json) == 0:
+        return None
     return _json_to_csv(ticker, json)

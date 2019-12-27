@@ -12,7 +12,8 @@ while True:
     for ticker in messages:
         log(f"Downloading {ticker} stock data")
         tmp_file_name = prices.download_daily_data(ticker)
-
+        if tmp_file_name is None:
+            continue
         file_name = f"{ticker}.csv"
         file_storage.put_file(tmp_file_name, constants.DATA_BUCKET_NAME, file_name)
     job_queue.ack(jobs.DOWNLOAD_QUEUE, to_ack)
