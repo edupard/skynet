@@ -1,7 +1,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: transpose
+  name: transpose-__INDEX__
   labels:
     jobgroup: transpose
 spec:
@@ -9,7 +9,7 @@ spec:
   backoffLimit: 1
   template:
     metadata:
-      name: transpose
+      name: transpose-__INDEX__
       labels:
         jobgroup: transpose
     spec:

@@ -48,6 +48,7 @@ def write_data(daily_data):
         os.remove(tmp_file_name)
 
 def collect_data(ticker, daily_data, data):
+    data = np.reshape(data, (-1, 13))
     for idx in range(data.shape[0]):
         values = data[idx, :]
         # ['date', 'o', 'h', 'l', 'c', 'v', 'a_o', 'a_h', 'a_l', 'a_c', 'a_v', 'div', 'split'])
