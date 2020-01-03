@@ -15,6 +15,18 @@ spec:
     spec:
       containers:
       - name: skynet
-        image: gcr.io/skynet-1984/skynet:__VERSION__
+        image: gcr.io/skynet-1984/skynet:05974caa581bb6640912407449d7548636c6cd9e
         args: ["job_download"]
+      volumeMounts:
+        - name: secret-volume
+          readOnly: true
+          mountPath: "/etc/secret-volume"
+        env:
+          - name: GOOGLE_APPLICATION_CREDENTIALS
+            value: /etc/secret-volume/key
+          - name: TIINGO_API_KEY
+            valueFrom:
+              secretKeyRef:
+                name: tiingo-credentials
+                key: token
       restartPolicy: Never
