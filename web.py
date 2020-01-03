@@ -1,8 +1,8 @@
 from flask import Flask
 from flask_restplus import Api, Resource
-from env import get_env_variables
-import tickers as tickers
-import scheduler as jobs
+from abstractions.env import get_env_variables
+from abstractions import tickers as tickers
+import job_scheduler as jobs
 
 app = Flask(__name__)
 api = Api(app=app)

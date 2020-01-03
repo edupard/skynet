@@ -1,5 +1,5 @@
 from abstractions.job_queue import push_job_queue_items
-from tickers import get_tickers
+from abstractions.tickers import get_tickers
 from abstractions.prices import TICKER_COLUMN
 
 DOWNLOAD_QUEUE = "download"

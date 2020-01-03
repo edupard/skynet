@@ -1,5 +1,5 @@
 import abstractions.job_queue as job_queue
-import scheduler as jobs
+import job_scheduler as jobs
 from abstractions.log import log
 import abstractions.prices as prices
 import abstractions.file_storage as file_storage
@@ -15,5 +15,5 @@ while True:
         if tmp_file_name is None:
             continue
         file_name = f"{ticker}.csv"
-        file_storage.put_file(tmp_file_name, constants.DATA_BUCKET_NAME, file_name)
+        file_storage.put_file(tmp_file_name, constants.DAILY_DATA_BUCKET_NAME, file_name)
     job_queue.ack(jobs.DOWNLOAD_QUEUE, to_ack)

@@ -1,5 +1,5 @@
 import abstractions.job_queue as job_queue
-import scheduler as jobs
+import job_scheduler as jobs
 from abstractions.daily_chunks_repo import ChunksRepo
 import abstractions.constants as constants
 import abstractions.file_storage as file_storage
@@ -81,7 +81,7 @@ while True:
     daily_data = {}
 
     for ticker in messages:
-        tmp_file_name = file_storage.get_file(constants.DATA_BUCKET_NAME, f"{ticker}.csv")
+        tmp_file_name = file_storage.get_file(constants.DAILY_DATA_BUCKET_NAME, f"{ticker}.csv")
         if tmp_file_name is None:
             continue
         # read file
@@ -89,10 +89,6 @@ while True:
         print(f"{ticker}.csv - {tmp_file_name}")
 
         os.remove(tmp_file_name)
-
-        if len(data.shape) == 1:
-            file_storage.remove_file(constants.DATA_BUCKET_NAME, f"{ticker}.csv")
-            continue
 
         collect_data(ticker, daily_data, data)
     write_data(daily_data)
