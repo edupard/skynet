@@ -30,6 +30,8 @@ spec:
           ports:
             - containerPort: 5000
           env:
+            - name: FLASK_APP
+              value: web.py
             - name: GOOGLE_APPLICATION_CREDENTIALS
               value: /etc/secret-volume/key
             - name: TIINGO_API_KEY
