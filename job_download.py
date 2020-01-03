@@ -11,8 +11,12 @@ while True:
         break
     for ticker in messages:
         log(f"Downloading {ticker} stock data")
-        tmp_file_name = prices.download_daily_data(ticker)
+        try:
+            tmp_file_name = prices.download_daily_data(ticker)
+        except:
+            continue
         if tmp_file_name is None:
+            log(f"Failed to download {ticker} stock data")
             continue
         file_name = f"{ticker}.csv"
         file_storage.put_file(tmp_file_name, constants.DAILY_DATA_BUCKET_NAME, file_name)

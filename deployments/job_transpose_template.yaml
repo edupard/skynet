@@ -1,17 +1,17 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: download
+  name: transpose
   labels:
-    jobgroup: download
+    jobgroup: transpose
 spec:
   completions: 20
   parallelism: 20
   template:
     metadata:
-      name: download
+      name: transpose
       labels:
-        jobgroup: download
+        jobgroup: transpose
     spec:
       volumes:
         - name: secret-volume
@@ -21,7 +21,7 @@ spec:
         - name: worker
           image: gcr.io/skynet-1984/skynet:__VERSION__
           command: ["python"]
-          args: ["job_download.py"]
+          args: ["job_transpose.py"]
           volumeMounts:
             - name: secret-volume
               readOnly: true
