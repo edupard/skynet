@@ -19,9 +19,9 @@ spec:
             secretName: hinton-svc-key
       containers:
         - name: worker
-          image: gcr.io/skynet-1984/skynet:__VERSION__
+          image: gcr.io/skynet-1984/skynet:c64437c465b3e79414603cf96b51aa2bbe393026
           command: ["python"]
-          args: ["job_transpose.py", "__INDEX__"]
+          args: ["job_transpose.py", "51"]
           volumeMounts:
             - name: secret-volume
               readOnly: true
