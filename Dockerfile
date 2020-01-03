@@ -1,5 +1,5 @@
 # https://github.com/GoogleCloudPlatform/python-runtime
-FROM
+FROM gcr.io/google-appengine/python
 
 RUN virtualenv -p python3.6 /env
 
