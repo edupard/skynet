@@ -5,8 +5,8 @@ metadata:
   labels:
     jobgroup: transpose
 spec:
-  completions: 1
-  backoffLimit: 1
+  completions: 20
+  parallelism: 20
   template:
     metadata:
       name: transpose
@@ -19,9 +19,9 @@ spec:
             secretName: hinton-svc-key
       containers:
         - name: worker
-          image: gcr.io/skynet-1984/skynet:__VERSION__
+          image: gcr.io/skynet-1984/skynet:009f0324ce31c658cd4077594fb977159ad99406
           command: ["python"]
-          args: ["job_transpose.py" "__INDEX__"]
+          args: ["job_transpose.py" "14"]
           volumeMounts:
             - name: secret-volume
               readOnly: true

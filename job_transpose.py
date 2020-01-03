@@ -8,6 +8,9 @@ import os
 import tempfile
 import csv
 import uuid
+import sys
+from abstractions.tickers import get_tickers
+from abstractions.prices import TICKER_COLUMN
 
 def write_data(daily_data):
     repo = ChunksRepo()
@@ -69,27 +72,28 @@ def collect_data(ticker, daily_data, data):
             daily_data[date] = arr
         arr.append([ticker, o, h, l, c, v, a_o, a_h, a_l, a_c, a_v, div, split])
 
+index = int(sys.argv[1])
+workers = 75
+df = get_tickers()
+tickers = df[TICKER_COLUMN].values
+total = len(tickers)
+batch_size = (total // workers) + 1
+start = index * batch_size
+stop = start + batch_size
+to_process = tickers[start: stop]
 
+daily_data = {}
 
-while True:
-    messages, to_ack = job_queue.pull_job_queue_items(jobs.TRANSPOSE_QUEUE, 200)
-    if len(messages) == 0:
-        break
+for ticker in to_process:
+    tmp_file_name = file_storage.get_file(constants.DAILY_DATA_BUCKET_NAME, f"{ticker}.csv")
+    if tmp_file_name is None:
+        continue
+    # read file
+    data = np.genfromtxt(tmp_file_name, delimiter=',', skip_header=1)
+    print(f"{ticker}.csv - {tmp_file_name}")
 
-    job_queue.ack(jobs.TRANSPOSE_QUEUE, to_ack)
+    os.remove(tmp_file_name)
 
-    daily_data = {}
-
-    for ticker in messages:
-        tmp_file_name = file_storage.get_file(constants.DAILY_DATA_BUCKET_NAME, f"{ticker}.csv")
-        if tmp_file_name is None:
-            continue
-        # read file
-        data = np.genfromtxt(tmp_file_name, delimiter=',', skip_header=1)
-        print(f"{ticker}.csv - {tmp_file_name}")
-
-        os.remove(tmp_file_name)
-
-        collect_data(ticker, daily_data, data)
-    write_data(daily_data)
+    collect_data(ticker, daily_data, data)
+write_data(daily_data)
 
