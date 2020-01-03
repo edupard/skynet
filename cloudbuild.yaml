@@ -16,7 +16,7 @@ steps:
     - |
       source version.sh
       gcloud container clusters get-credentials --project="skynet-1984" --zone="us-central1-a" "virgo"
-      sed -e "s|__VERSION__|$COMMIT_SHA|g" deployments/web.yaml | tee deployments/web.yaml
+      sed -e "s|__VERSION__|$COMMIT_SHA|g" deployments/web_template.yaml | tee deployments/web.yaml
       cat deployments/web.yaml
       kubectl apply -f - <deployments/web.yaml
   env:

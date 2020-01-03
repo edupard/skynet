@@ -1,18 +1,18 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: skynet-web
+  name: web
   labels:
-    app: skynet-web
+    app: web
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: skynet-web
+      app: web
   template:
     metadata:
       labels:
-        app: skynet-web
+        app: web
     spec:
       volumes:
         - name: secret-volume
@@ -20,7 +20,7 @@ spec:
             secretName: hinton-svc-key
       containers:
         - name: worker
-          image: gcr.io/skynet-1984/skynet-web:__VERSION__
+          image: gcr.io/skynet-1984/skynet:__VERSION__
           command: ["flask"]
           args: ["run", "--host=0.0.0.0"]
           volumeMounts:
