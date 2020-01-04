@@ -76,6 +76,8 @@ while True:
                 continue
             read_data(tmp_file_name, dict)
             os.remove(tmp_file_name)
+        if not dict:
+            continue
         write_data(date, dict)
 
     job_queue.ack(jobs.CONCAT_QUEUE, to_ack)
