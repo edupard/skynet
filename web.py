@@ -30,6 +30,12 @@ class TransposePrices(Resource):
         jobs.schedule_transpose()
         return 'Success'
 
+@ns_tasks.route('/concat_daily_prices')
+class ConcatDailyPrices(Resource):
+    def get(self):
+        jobs.schedule_concat()
+        return 'Success'
+
 @ns_tasks.route('/env')
 class PrintEnvVariables(Resource):
     def get(this):
