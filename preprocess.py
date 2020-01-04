@@ -6,8 +6,9 @@ import math
 import traceback
 import sys
 
-ANN_FACTOR = 252.75
+#https://www.youtube.com/watch?v=ffDLG7Vt6JE&t=18s
 
+ANN_FACTOR = 252.75
 
 def ema(prev_ema, val, gamma):
     return val * (1 - gamma) + gamma * prev_ema

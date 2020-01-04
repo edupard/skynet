@@ -35,6 +35,7 @@ def write_data(date, dict):
             split = p[11]
             writer.writerow([ticker, o, h, l, c, v, a_o, a_h, a_l, a_c, a_v, div, split])
     file_storage.put_file(tmp_file_name, constants.DATA_BUCKET_NAME, f"daily/{date}.csv")
+    os.remove(tmp_file_name)
 
 
 def read_data(chunk, dict):
