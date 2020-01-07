@@ -5,6 +5,7 @@ from abstractions.prices import TICKER_COLUMN
 DOWNLOAD_QUEUE = "download"
 TRANSPOSE_QUEUE = "transpose"
 CONCAT_QUEUE = "concat"
+PREPROCESS_QUEUE = "preprocess"
 
 def schedule_download():
     df = get_tickers()
@@ -13,6 +14,10 @@ def schedule_download():
 def schedule_transpose():
     df = get_tickers()
     push_job_queue_items(TRANSPOSE_QUEUE, df[TICKER_COLUMN].values)
+
+def schedule_preprocess():
+    df = get_tickers()
+    push_job_queue_items(PREPROCESS_QUEUE, df[TICKER_COLUMN].values)
 
 def schedule_concat():
     dates = []

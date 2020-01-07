@@ -30,6 +30,12 @@ class TransposePrices(Resource):
         jobs.schedule_transpose()
         return 'Success'
 
+@ns_tasks.route('/preprocess_prices')
+class PreprocessPrices(Resource):
+    def get(self):
+        jobs.schedule_preprocess()
+        return 'Success'
+
 @ns_tasks.route('/concat_daily_prices')
 class ConcatDailyPrices(Resource):
     def get(self):
