@@ -70,7 +70,7 @@ while True:
         chunks = repo.get_chunks(date)
         dict = {}
         for chunk in chunks:
-            tmp_file_name = file_storage.get_file(constants.TEMP_BUCKET_NAME, f"{sDate}-{chunk['uuid']}.csv")
+            tmp_file_name = file_storage.get_file(constants.DATA_BUCKET_NAME, f"tmp/{sDate}-{chunk['uuid']}.csv")
             if tmp_file_name is None:
                 log(f"Can't find {chunk['uuid']}.csv")
                 continue

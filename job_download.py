@@ -18,6 +18,5 @@ while True:
         if tmp_file_name is None:
             log(f"Failed to download {ticker} stock data")
             continue
-        file_name = f"{ticker}.csv"
-        file_storage.put_file(tmp_file_name, constants.DAILY_DATA_BUCKET_NAME, file_name)
+        file_storage.put_file(tmp_file_name, constants.DATA_BUCKET_NAME, f"stocks/{ticker}.csv")
     job_queue.ack(jobs.DOWNLOAD_QUEUE, to_ack)

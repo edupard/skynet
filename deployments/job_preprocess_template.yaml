@@ -5,8 +5,8 @@ metadata:
   labels:
     jobgroup: preprocess
 spec:
-  completions: 20
-  parallelism: 20
+  completions: 5
+  parallelism: 5
   template:
     metadata:
       name: preprocess

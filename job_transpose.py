@@ -43,7 +43,7 @@ def write_data(daily_data):
                 writer.writerow([ticker, o, h, l, c, v, a_o, a_h, a_l, a_c, a_v, div, split])
 
         sUuid = str(uuid.uuid1())
-        file_storage.put_file(tmp_file_name, constants.TEMP_BUCKET_NAME, f"{date}-{sUuid}.csv")
+        file_storage.put_file(tmp_file_name, constants.DATA_BUCKET_NAME, f"tmp/{date}-{sUuid}.csv")
         repo.store_chunk(date, sUuid)
         os.remove(tmp_file_name)
 
@@ -86,7 +86,7 @@ to_process = tickers[start: stop]
 daily_data = {}
 
 for ticker in to_process:
-    tmp_file_name = file_storage.get_file(constants.DAILY_DATA_BUCKET_NAME, f"{ticker}.csv")
+    tmp_file_name = file_storage.get_file(constants.DATA_BUCKET_NAME, f"stocks/{ticker}.csv")
     if tmp_file_name is None:
         continue
     # read file
