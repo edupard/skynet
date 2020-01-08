@@ -4,8 +4,12 @@ import tempfile
 import os
 import pandas as pd
 import abstractions.constants as constants
+from abstractions import constants as constants
+from abstractions.file_storage import put_file, get_file
 
 TICKER_COLUMN = "ticker"
+START_DATE_COLUMN = "startDate"
+END_DATE_COLUMN = "endDate"
 
 def _get_tiingo_client() -> TiingoClient:
     tiingo_config = {}
@@ -14,7 +18,7 @@ def _get_tiingo_client() -> TiingoClient:
     return TiingoClient(tiingo_config)
 
 
-def get_tickers():
+def get_tickers_info():
     client = _get_tiingo_client()
     tickers = client.list_stock_tickers()
     matches = [el for el in tickers if
@@ -65,3 +69,16 @@ def download_daily_data(ticker):
     if len(json) == 0:
         return None
     return _json_to_csv(ticker, json)
+
+
+def save_tickers():
+    df = get_tickers_info()
+    fd, tmp_file_name = tempfile.mkstemp()
+    os.close(fd)
+    df.to_csv(tmp_file_name, index=False)
+    put_file(tmp_file_name, constants.DATA_BUCKET_NAME, "tickers.csv")
+
+
+def get_tickers():
+    local_file_name = get_file(constants.DATA_BUCKET_NAME, "tickers.csv")
+    return pd.read_csv(local_file_name)

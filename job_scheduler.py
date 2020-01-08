@@ -1,6 +1,5 @@
 from abstractions.job_queue import push_job_queue_items
-from abstractions.tickers import get_tickers
-from abstractions.prices import TICKER_COLUMN
+from abstractions.tiingo import TICKER_COLUMN, get_tickers
 
 DOWNLOAD_QUEUE = "download"
 TRANSPOSE_QUEUE = "transpose"

@@ -1,6 +1,8 @@
 import numpy as np
 import datetime
 
+def date_to_i(date: datetime.datetime):
+    return date.year * 10000 + date.month * 100 + date.day
 
 def i_to_date(i_date):
     return datetime.date(i_date // 10000, (i_date % 10000) // 100, i_date % 100)

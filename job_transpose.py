@@ -1,5 +1,3 @@
-import abstractions.job_queue as job_queue
-import job_scheduler as jobs
 from abstractions.daily_chunks_repo import ChunksRepo
 import abstractions.constants as constants
 import abstractions.file_storage as file_storage
@@ -9,8 +7,8 @@ import tempfile
 import csv
 import uuid
 import sys
-from abstractions.tickers import get_tickers
-from abstractions.prices import TICKER_COLUMN
+from abstractions.tiingo import TICKER_COLUMN, get_tickers
+
 
 def write_data(daily_data):
     repo = ChunksRepo()

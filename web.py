@@ -1,5 +1,7 @@
 from flask import Flask
 from flask_restplus import Api, Resource
+
+import abstractions.tiingo
 from abstractions.env import get_env_variables
 from abstractions import tickers as tickers
 import job_scheduler as jobs
@@ -14,7 +16,7 @@ if __name__ == "__main__":
 @ns_tasks.route('/download_tickers')
 class DownloadTickers(Resource):
     def get(self):
-        tickers.save_tickers()
+        abstractions.tiingo.save_tickers()
         return 'Success'
 
 

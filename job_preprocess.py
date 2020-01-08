@@ -6,13 +6,15 @@ import abstractions.constants as constants
 import os
 import numpy as np
 import datetime
-from utils.utils import arr_rema, i_to_date, roll_arr_fwd
+from utils.utils import arr_rema, i_to_date, date_to_i, roll_arr_fwd
 import math
 import tempfile
+from abstractions.tiingo import get_tickers, START_DATE_COLUMN, END_DATE_COLUMN
 
-#https://www.youtube.com/watch?v=ffDLG7Vt6JE&t=18s
+# https://www.youtube.com/watch?v=ffDLG7Vt6JE&t=18s
 
 ANN_FACTOR = 252.75
+
 
 def get_indexes(i_dates: np.ndarray, min_date: datetime.date):
     indexes = np.zeros_like(i_dates)
@@ -22,20 +24,20 @@ def get_indexes(i_dates: np.ndarray, min_date: datetime.date):
         idx = idx + 1
     return indexes
 
-def get_raw_data(min_date: datetime.date, max_date: datetime.date, indexes: np.ndarray, data: np.ndarray):
 
+def get_raw_data(min_date: datetime.date, max_date: datetime.date, indexes: np.ndarray, data: np.ndarray):
     total_points = (max_date - min_date).days + 1
     # ['v', 't', 'a_o', 'a_h', 'a_l', 'a_c']
     raw = np.zeros((total_points, 6))
     # no trading activity interpreted as very small quantity
-    raw[:,0] = 100
+    raw[:, 0] = 100
     # ['date', 'o', 'h', 'l', 'c', 'v', 'a_o', 'a_h', 'a_l', 'a_c', 'a_v', 'div', 'split']
-    raw[indexes,0] = data[:,5]
-    raw[indexes,1] = (data[:,2] + data[:,3] + data[:,4]) / 3
-    raw[indexes, 2] = data[:,6]
-    raw[indexes, 3] = data[:,7]
-    raw[indexes, 4] = data[:,8]
-    raw[indexes, 5] = data[:,9]
+    raw[indexes, 0] = data[:, 5]
+    raw[indexes, 1] = (data[:, 2] + data[:, 3] + data[:, 4]) / 3
+    raw[indexes, 2] = data[:, 6]
+    raw[indexes, 3] = data[:, 7]
+    raw[indexes, 4] = data[:, 8]
+    raw[indexes, 5] = data[:, 9]
 
     zero_prices_mask = raw[:, 5] == 0
     # roll closing price
@@ -47,6 +49,7 @@ def get_raw_data(min_date: datetime.date, max_date: datetime.date, indexes: np.n
     raw[zero_prices_mask, 4] = raw[zero_prices_mask, 5]
 
     return raw
+
 
 def get_input_from_raw(raw):
     gv = raw[:, 0] * raw[:, 1]
@@ -72,8 +75,9 @@ def get_input_from_raw(raw):
     result = np.stack([lr_o, lr_h, lr_l, lr_c, lr_gv], axis=1)
     return result
 
+
 def get_output(raw, gamma):
-    #gv, t, a_o, a_h, a_l, a_c
+    # gv, t, a_o, a_h, a_l, a_c
     a_c = raw[:, 5]
     a_c_0 = a_c[0]
     a_c_t_min_1 = np.roll(a_c, 1, axis=0)
@@ -94,14 +98,15 @@ def get_output(raw, gamma):
     stddev_rema_ann = math.sqrt(ANN_FACTOR) * stddev_rema
 
     return np.stack([lr_rema_ann,
-              stddev_rema_ann], axis=1)
+                     stddev_rema_ann], axis=1)
+
 
 def save(ticker, spy_dates, spy_input, raw_input, raw_output, gamma):
-    result = np.hstack([np.reshape(spy_dates, (-1,1)), spy_input, raw_input, raw_output])
+    result = np.hstack([spy_dates, spy_input, raw_input, raw_output])
     fd, tmp_file_name = tempfile.mkstemp()
     os.close(fd)
 
-    #savetxt(fname, X, fmt='%.18e', delimiter=' ', newline='\n', header='',footer='', comments='# ', encoding=None):
+    # savetxt(fname, X, fmt='%.18e', delimiter=' ', newline='\n', header='',footer='', comments='# ', encoding=None):
     np.savetxt(tmp_file_name,
                result,
                fmt='%.0f %.18e %.18e %.18e %.18e %.18e %.18e %.18e %.18e %.18e %.18e %.18e %.18e',
@@ -111,7 +116,8 @@ def save(ticker, spy_dates, spy_input, raw_input, raw_output, gamma):
     file_storage.put_file(tmp_file_name, constants.DATA_BUCKET_NAME, f"ds/{ticker}_{gamma}.csv")
     os.remove(tmp_file_name)
 
-def preprocess(ticker, tmp_file_name, spy_tmp_file_name):
+
+def preprocess(startDate, endDate, ticker, tmp_file_name, spy_tmp_file_name):
     data = np.reshape(np.genfromtxt(tmp_file_name, delimiter=',', skip_header=1), (-1, 13))
     spy_data = np.reshape(np.genfromtxt(spy_tmp_file_name, delimiter=',', skip_header=1), (-1, 13))
     # ['date', 'o', 'h', 'l', 'c', 'v', 'a_o', 'a_h', 'a_l', 'a_c', 'a_v', 'div', 'split']
@@ -133,8 +139,15 @@ def preprocess(ticker, tmp_file_name, spy_tmp_file_name):
     spy_raw = spy_raw[spy_indexes, :]
     raw = raw[spy_indexes, :]
 
-    # ['v', 't', 'a_o', 'a_h', 'a_l', 'a_c']
     spy_input = get_input_from_raw(spy_raw)
+
+    dates_mask = (spy_dates >= date_to_i(start_date)) & (spy_dates < date_to_i(end_date))
+
+    spy_input = spy_input[dates_mask, :]
+    spy_dates = np.reshape(spy_dates, (-1, 1))
+    spy_dates = spy_dates[dates_mask, :]
+
+    raw = raw[dates_mask, :]
     raw_input = get_input_from_raw(raw)
     raw_output_95 = get_output(raw, 0.95)
     raw_output_90 = get_output(raw, 0.90)
@@ -153,18 +166,30 @@ def preprocess(ticker, tmp_file_name, spy_tmp_file_name):
 
 spy_tmp_file_name = None
 
+tickers = get_tickers()
+
 while True:
     messages, to_ack = job_queue.pull_job_queue_items(jobs.PREPROCESS_QUEUE, 1)
     if len(messages) == 0:
         break
     for ticker in messages:
+        ticker_info = tickers.query(f'ticker == "{ticker}"')
+        if ticker_info.shape[0] == 0:
+            continue
+        sStartDate = ticker_info.iloc[0][START_DATE_COLUMN]
+        sEndDate = ticker_info.iloc[0][END_DATE_COLUMN]
+        if sStartDate == "" or sStartDate is None or sEndDate == "" or sEndDate is None:
+            continue
+        start_date = datetime.datetime.strptime(sStartDate, "%Y-%m-%d")
+        end_date = datetime.datetime.strptime(sEndDate, "%Y-%m-%d")
+
         tmp_file_name = file_storage.get_file(constants.DATA_BUCKET_NAME, f"stocks/{ticker}.csv")
         if tmp_file_name is None:
             continue
         if spy_tmp_file_name is None:
             spy_tmp_file_name = file_storage.get_file(constants.DATA_BUCKET_NAME, "stocks/SPY.csv")
         log(f"Preprocessing {ticker} stock data")
-        preprocess(ticker, tmp_file_name, spy_tmp_file_name)
+        preprocess(start_date, end_date, ticker, tmp_file_name, spy_tmp_file_name)
         os.remove(tmp_file_name)
 
     job_queue.ack(jobs.PREPROCESS_QUEUE, to_ack)

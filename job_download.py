@@ -1,7 +1,7 @@
 import abstractions.job_queue as job_queue
 import job_scheduler as jobs
 from abstractions.log import log
-import abstractions.prices as prices
+import abstractions.tiingo as tiingo
 import abstractions.file_storage as file_storage
 import abstractions.constants as constants
 
@@ -12,7 +12,7 @@ while True:
     for ticker in messages:
         log(f"Downloading {ticker} stock data")
         try:
-            tmp_file_name = prices.download_daily_data(ticker)
+            tmp_file_name = tiingo.download_daily_data(ticker)
         except:
             continue
         if tmp_file_name is None:
