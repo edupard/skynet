@@ -3,7 +3,6 @@ from flask_restplus import Api, Resource
 
 import abstractions.tiingo
 from abstractions.env import get_env_variables
-from abstractions import tickers as tickers
 import job_scheduler as jobs
 
 app = Flask(__name__)

@@ -29,8 +29,7 @@ def get_raw_data(min_date: datetime.date, max_date: datetime.date, indexes: np.n
     total_points = (max_date - min_date).days + 1
     # ['v', 't', 'a_o', 'a_h', 'a_l', 'a_c']
     raw = np.zeros((total_points, 6))
-    # no trading activity interpreted as very small quantity
-    raw[:, 0] = 100
+
     # ['date', 'o', 'h', 'l', 'c', 'v', 'a_o', 'a_h', 'a_l', 'a_c', 'a_v', 'div', 'split']
     raw[indexes, 0] = data[:, 5]
     raw[indexes, 1] = (data[:, 2] + data[:, 3] + data[:, 4]) / 3
@@ -39,17 +38,25 @@ def get_raw_data(min_date: datetime.date, max_date: datetime.date, indexes: np.n
     raw[indexes, 4] = data[:, 8]
     raw[indexes, 5] = data[:, 9]
 
-    zero_prices_mask = raw[:, 5] == 0
+    # now we apply hacks
+    zero_volume_mask = raw[:, 0] == 0
+    # no trading activity interpreted as very small quantity
+    raw[zero_volume_mask, 0] = 100
+
     # roll closing price
     raw[:, 5] = roll_arr_fwd(raw[:, 5])
+
     # copy closing price if other prices is missing
+    zero_prices_mask = raw[:, 1] == 0
     raw[zero_prices_mask, 1] = raw[zero_prices_mask, 5]
+    zero_prices_mask = raw[:, 2] == 0
     raw[zero_prices_mask, 2] = raw[zero_prices_mask, 5]
+    zero_prices_mask = raw[:, 3] == 0
     raw[zero_prices_mask, 3] = raw[zero_prices_mask, 5]
+    zero_prices_mask = raw[:, 4] == 0
     raw[zero_prices_mask, 4] = raw[zero_prices_mask, 5]
 
     return raw
-
 
 def get_input_from_raw(raw):
     gv = raw[:, 0] * raw[:, 1]
@@ -178,7 +185,7 @@ while True:
             continue
         sStartDate = ticker_info.iloc[0][START_DATE_COLUMN]
         sEndDate = ticker_info.iloc[0][END_DATE_COLUMN]
-        if sStartDate == "" or sStartDate is None or sEndDate == "" or sEndDate is None:
+        if not isinstance(sStartDate, str) or not isinstance(sEndDate, str):
             continue
         start_date = datetime.datetime.strptime(sStartDate, "%Y-%m-%d")
         end_date = datetime.datetime.strptime(sEndDate, "%Y-%m-%d")
