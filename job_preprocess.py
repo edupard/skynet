@@ -25,8 +25,7 @@ def get_indexes(i_dates: np.ndarray, min_date: datetime.date):
     return indexes
 
 
-def get_raw_data(min_date: datetime.date, max_date: datetime.date, indexes: np.ndarray, data: np.ndarray):
-    total_points = (max_date - min_date).days + 1
+def get_raw_data(total_points, indexes: np.ndarray, data: np.ndarray):
     # ['v', 't', 'a_o', 'a_h', 'a_l', 'a_c']
     raw = np.zeros((total_points, 6))
 
@@ -120,35 +119,50 @@ def save(ticker, spy_dates, spy_input, raw_input, raw_output, gamma):
                delimiter=',',
                comments='',
                header='date,spy_lr_o,spy_lr_h,spy_lr_l,spy_lr_c,spy_lr_gv,lr_o,lr_h,lr_l,lr_c,lr_gv,p_lr,p_std')
-    file_storage.put_file(tmp_file_name, constants.DATA_BUCKET_NAME, f"ds/{ticker}_{gamma}.csv")
+    file_storage.put_file(tmp_file_name, constants.DATA_BUCKET_NAME, f"preprocessed/{ticker}_{gamma}.csv")
     os.remove(tmp_file_name)
 
 
-def preprocess(startDate, endDate, ticker, tmp_file_name, spy_tmp_file_name):
-    data = np.reshape(np.genfromtxt(tmp_file_name, delimiter=',', skip_header=1), (-1, 13))
+def preprocess(ticker, tmp_file_name, spy_tmp_file_name):
+    eq_data = np.reshape(np.genfromtxt(tmp_file_name, delimiter=',', skip_header=1), (-1, 13))
+    # do not process small datasets
+    if eq_data.shape[0] <= 200:
+        return
     spy_data = np.reshape(np.genfromtxt(spy_tmp_file_name, delimiter=',', skip_header=1), (-1, 13))
     # ['date', 'o', 'h', 'l', 'c', 'v', 'a_o', 'a_h', 'a_l', 'a_c', 'a_v', 'div', 'split']
 
     spy_dates = spy_data[:, 0]
+    # get dates
     i_spy_dates = spy_dates.astype(np.int)
-    i_dates = data[:, 0].astype(np.int)
-    i_min_date = min(i_spy_dates[0], i_dates[0])
-    i_max_date = max(i_spy_dates[-1], i_dates[-1])
-    min_date = i_to_date(i_min_date)
-    max_date = i_to_date(i_max_date)
+    i_eq_dates = eq_data[:, 0].astype(np.int)
 
-    spy_indexes = get_indexes(i_spy_dates, min_date)
-    indexes = get_indexes(i_dates, min_date)
+    # eq
+    i_min_eq_date = i_eq_dates[0]
+    i_max_eq_date = i_eq_dates[-1]
+    min_eq_date = i_to_date(i_min_eq_date)
+    max_eq_date = i_to_date(i_max_eq_date)
+    # snp
+    i_min_spy_date = i_spy_dates[0]
+    i_max_spy_date = i_spy_dates[-1]
+    min_spy_date = i_to_date(i_min_spy_date)
+    max_spy_date = i_to_date(i_max_spy_date)
 
-    spy_raw = get_raw_data(min_date, max_date, spy_indexes, spy_data)
-    raw = get_raw_data(min_date, max_date, indexes, data)
+    # global indexes relatives to spy begin
+    spy_indexes = get_indexes(i_spy_dates, min_spy_date)
+    eq_indexes = get_indexes(i_eq_dates, min_spy_date)
 
+    total_points = (max_spy_date - min_spy_date).days + 1
+    spy_raw = get_raw_data(total_points, spy_indexes, spy_data)
+    raw = get_raw_data(total_points, eq_indexes, eq_data)
+
+    # now leave only active trading days: spy is traded
     spy_raw = spy_raw[spy_indexes, :]
     raw = raw[spy_indexes, :]
 
     spy_input = get_input_from_raw(spy_raw)
 
-    dates_mask = (spy_dates >= date_to_i(start_date)) & (spy_dates < date_to_i(end_date))
+    # spy dates less than i_max_eq_date beacuse last day volume is usually 0 - price is fixed
+    dates_mask = (spy_dates >= i_min_eq_date) & (spy_dates < i_max_eq_date)
 
     spy_input = spy_input[dates_mask, :]
     spy_dates = np.reshape(spy_dates, (-1, 1))
@@ -189,6 +203,8 @@ while True:
             continue
         start_date = datetime.datetime.strptime(sStartDate, "%Y-%m-%d")
         end_date = datetime.datetime.strptime(sEndDate, "%Y-%m-%d")
+        if (end_date - start_date).days <= 200:
+            continue
 
         tmp_file_name = file_storage.get_file(constants.DATA_BUCKET_NAME, f"stocks/{ticker}.csv")
         if tmp_file_name is None:
@@ -196,7 +212,7 @@ while True:
         if spy_tmp_file_name is None:
             spy_tmp_file_name = file_storage.get_file(constants.DATA_BUCKET_NAME, "stocks/SPY.csv")
         log(f"Preprocessing {ticker} stock data")
-        preprocess(start_date, end_date, ticker, tmp_file_name, spy_tmp_file_name)
+        preprocess(ticker, tmp_file_name, spy_tmp_file_name)
         os.remove(tmp_file_name)
 
     job_queue.ack(jobs.PREPROCESS_QUEUE, to_ack)
