@@ -1,27 +1,27 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: download
+  name: samples
   labels:
-    jobgroup: download
+    jobgroup: samples
 spec:
   completions: 20
   parallelism: 20
   template:
     metadata:
-      name: download
+      name: samples
       labels:
-        jobgroup: download
+        jobgroup: samples
     spec:
       volumes:
         - name: secret-volume
           secret:
             secretName: hinton-svc-key
       containers:
-        - name: download
+        - name: samples
           image: gcr.io/skynet-1984/skynet:__VERSION__
           command: ["python"]
-          args: ["job_download.py"]
+          args: ["job_samples.py"]
           volumeMounts:
             - name: secret-volume
               readOnly: true
@@ -31,9 +31,4 @@ spec:
           env:
             - name: GOOGLE_APPLICATION_CREDENTIALS
               value: /etc/secret-volume/key
-            - name: TIINGO_API_KEY
-              valueFrom:
-                secretKeyRef:
-                  name: tiingo-credentials
-                  key: token
       restartPolicy: Never

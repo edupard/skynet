@@ -18,7 +18,7 @@ spec:
           secret:
             secretName: hinton-svc-key
       containers:
-        - name: worker
+        - name: transpose-__INDEX__
           image: gcr.io/skynet-1984/skynet:__VERSION__
           resources:
             limits:

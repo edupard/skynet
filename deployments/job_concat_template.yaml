@@ -18,7 +18,7 @@ spec:
           secret:
             secretName: hinton-svc-key
       containers:
-        - name: worker
+        - name: concat
           image: gcr.io/skynet-1984/skynet:__VERSION__
           command: ["python"]
           args: ["job_concat.py"]
