@@ -5,8 +5,7 @@ import abstractions.log as log
 import tempfile
 import os
 
-TOP_N = 500
-PRICE_LIMIT = 5
+from abstractions.constants import TOP_N, PRICE_LIMIT
 
 
 def save_samples_data():

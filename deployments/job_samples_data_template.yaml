@@ -26,8 +26,6 @@ spec:
             - name: secret-volume
               readOnly: true
               mountPath: "/etc/secret-volume"
-          ports:
-            - containerPort: 5000
           env:
             - name: GOOGLE_APPLICATION_CREDENTIALS
               value: /etc/secret-volume/key

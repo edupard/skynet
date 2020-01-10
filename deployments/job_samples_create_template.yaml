@@ -1,32 +1,27 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: transpose-__INDEX__
+  name: samples-create-__INDEX__
   labels:
-    jobgroup: transpose
+    jobgroup: samples-create
 spec:
   completions: 1
   backoffLimit: 1
   template:
     metadata:
-      name: transpose-__INDEX__
+      name: samples-create-__INDEX__
       labels:
-        jobgroup: transpose
+        jobgroup: samples-create
     spec:
       volumes:
         - name: secret-volume
           secret:
             secretName: hinton-svc-key
       containers:
-        - name: transpose-__INDEX__
+        - name: samples-create-__INDEX__
           image: gcr.io/skynet-1984/skynet:__VERSION__
-          resources:
-            limits:
-              memory: "1000Mi"
-            requests:
-              memory: "500Mi"
           command: ["python"]
-          args: ["job_transpose.py", "__INDEX__"]
+          args: ["job_samples_create.py", "__INDEX__", "12000"]
           volumeMounts:
             - name: secret-volume
               readOnly: true
