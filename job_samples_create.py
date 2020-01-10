@@ -18,6 +18,8 @@ os.remove(tmp_sample_stocks_file)
 batch_id = int(sys.argv[1])
 num_samples = int(sys.argv[2])
 repo = SamplesRepo()
+# cleanup
+repo.remove(batch_id)
 
 dates = sample_dates_data[:,0].astype(np.int)
 stocks_per_day = sample_dates_data[:,1]
