@@ -27,11 +27,13 @@ total_days = dates.shape[0]
 date_prob = stocks_per_day / np.sum(stocks_per_day)
 
 dates_samples = np.random.choice(total_days, num_samples, p=date_prob)
-tickers_samples = np.random.choice(TOP_N, num_samples)
+tickers_samples = np.random.choice(TOP_N - 1, num_samples)
 
 for i in range(num_samples):
     date_idx = dates_samples[i]
     ticker_idx = tickers_samples[i]
     i_date = int(dates[date_idx])
     ticker = sample_stocks[date_idx, ticker_idx]
+    if ticker == "SPY" or ticker == "ZXZZT":
+        continue
     repo.create(batch_id, ticker, i_date)
