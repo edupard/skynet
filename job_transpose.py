@@ -42,7 +42,7 @@ def write_data(daily_data):
 
         sUuid = str(uuid.uuid1())
         file_storage.put_file(tmp_file_name, constants.DATA_BUCKET_NAME, f"tmp/{date}-{sUuid}.csv")
-        repo.store_chunk(date, sUuid)
+        repo.create(date, sUuid)
         os.remove(tmp_file_name)
 
 def collect_data(ticker, daily_data, data):

@@ -1,6 +1,4 @@
 import abstractions.constants as constants
-from abstractions.tiingo import get_tickers
-import datetime
 import abstractions.file_storage as file_storage
 import numpy as np
 import abstractions.log as log
@@ -11,7 +9,7 @@ TOP_N = 500
 PRICE_LIMIT = 5
 
 
-def load_samples_data():
+def save_samples_data():
     spy_tmp_file_name = file_storage.get_file(constants.DATA_BUCKET_NAME, "stocks/SPY.csv")
     spy_data = np.reshape(np.genfromtxt(spy_tmp_file_name, delimiter=',', skip_header=1), (-1, 13))
     spy_dates = spy_data[:, 0]
@@ -40,6 +38,7 @@ def load_samples_data():
                                    delimiter=',',
                                    usecols=[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
                                    skip_header=1)
+        os.remove(tmp_file_name)
         # filter out stocks with closing price less than 5
         price_mask = daily_data[:, 3] > PRICE_LIMIT
         daily_data = daily_data[price_mask, :]
@@ -75,18 +74,4 @@ def load_samples_data():
     file_storage.put_file(tmp_file_name, constants.DATA_BUCKET_NAME, f"sample_stocks.csv")
     os.remove(tmp_file_name)
 
-    return (sample_dates, sample_stocks)
-
-
-tmp_samples_file = file_storage.get_file(constants.DATA_BUCKET_NAME, f"sample.csv")
-tmp_sample_stocks_file = file_storage.get_file(constants.DATA_BUCKET_NAME, f"sample_stocks.csv")
-
-if tmp_sample_stocks_file is None or tmp_samples_file is None:
-    sample_dates, sample_stocks = load_samples_data()
-else:
-    sample_dates = np.genfromtxt(tmp_samples_file, delimiter=',', skip_header=1)
-    if tmp_samples_file is not None:
-        os.remove(tmp_samples_file)
-    sample_stocks = np.genfromtxt(tmp_sample_stocks_file, delimiter=',', dtype='U20', skip_header=1)
-    if tmp_sample_stocks_file is not None:
-        os.remove(tmp_sample_stocks_file)
+save_samples_data()

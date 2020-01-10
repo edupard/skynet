@@ -1,27 +1,27 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: samples
+  name: samples-data
   labels:
-    jobgroup: samples
+    jobgroup: samples-data
 spec:
-  completions: 20
-  parallelism: 20
+  completions: 1
+  parallelism: 1
   template:
     metadata:
-      name: samples
+      name: samples-data
       labels:
-        jobgroup: samples
+        jobgroup: samples-data
     spec:
       volumes:
         - name: secret-volume
           secret:
             secretName: hinton-svc-key
       containers:
-        - name: samples
+        - name: samples-data
           image: gcr.io/skynet-1984/skynet:__VERSION__
           command: ["python"]
-          args: ["job_samples.py"]
+          args: ["job_samples_data.py"]
           volumeMounts:
             - name: secret-volume
               readOnly: true

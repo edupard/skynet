@@ -67,7 +67,7 @@ while True:
     for sDate in messages:
         log(f"Processing {sDate}")
         date = int(sDate)
-        chunks = repo.get_chunks(date)
+        chunks = repo.get(date)
         dict = {}
         for chunk in chunks:
             tmp_file_name = file_storage.get_file(constants.DATA_BUCKET_NAME, f"tmp/{sDate}-{chunk['uuid']}.csv")
