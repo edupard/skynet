@@ -4,6 +4,7 @@ import numpy as np
 import abstractions.log as log
 import tempfile
 import os
+import time
 
 from abstractions.constants import TOP_N, PRICE_LIMIT
 
@@ -22,7 +23,19 @@ def save_samples_data():
         log.log(f"Processing {i_date}")
 
         dates.append(i_date)
-        tmp_file_name = file_storage.get_file(constants.DATA_BUCKET_NAME, f"daily/{i_date}.csv")
+
+        tmp_file_name = None
+        for i in range(3):
+            try:
+                tmp_file_name = file_storage.get_file(constants.DATA_BUCKET_NAME, f"daily/{i_date}.csv")
+            except:
+                time.sleep(10)
+                log.log("Retrying...")
+                continue
+            break
+        if tmp_file_name is None:
+            raise Exception(f"daily/{i_date}.csv download failed")
+
         # ticker o h l c v a_o a_h a_l a_c a_v div split
         tickers = np.reshape(np.genfromtxt(tmp_file_name,
                                            dtype='U20',
