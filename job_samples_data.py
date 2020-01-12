@@ -8,7 +8,6 @@ import time
 
 from abstractions.constants import TOP_N, PRICE_LIMIT
 
-
 def save_samples_data():
     spy_tmp_file_name = file_storage.get_file(constants.DATA_BUCKET_NAME, "stocks/SPY.csv")
     spy_data = np.reshape(np.genfromtxt(spy_tmp_file_name, delimiter=',', skip_header=1), (-1, 13))
@@ -21,8 +20,6 @@ def save_samples_data():
 
     for i_date in i_spy_dates:
         log.log(f"Processing {i_date}")
-
-        dates.append(i_date)
 
         tmp_file_name = None
         for i in range(3):
@@ -43,9 +40,6 @@ def save_samples_data():
                                            usecols=0,
                                            skip_header=1,
                                            ), (-1, 1))
-        total_tickers = tickers.shape[0]
-        totals.append(total_tickers)
-
         daily_data = np.genfromtxt(tmp_file_name,
                                    delimiter=',',
                                    usecols=[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
@@ -67,6 +61,8 @@ def save_samples_data():
         top_tickers = sorted_tickers[0:TOP_N, :]
 
         tops.append(np.reshape(top_tickers, (1, TOP_N)))
+        dates.append(i_date)
+        totals.append(tickers.shape[0])
 
     col_dates = np.reshape(np.array(dates), (-1, 1))
     col_totals = np.reshape(np.array(totals), (-1, 1))

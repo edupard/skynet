@@ -5,7 +5,8 @@ import numpy as np
 import abstractions.log as log
 import os
 import sys
-from abstractions.constants import TOP_N
+
+SAMPLE_FROM_TOP = 500 + 2
 
 tmp_samples_file = file_storage.get_file(constants.DATA_BUCKET_NAME, f"sample.csv")
 sample_dates_data = np.genfromtxt(tmp_samples_file, delimiter=',', skip_header=1)
@@ -27,7 +28,7 @@ total_days = dates.shape[0]
 date_prob = stocks_per_day / np.sum(stocks_per_day)
 
 dates_samples = np.random.choice(total_days, num_samples, p=date_prob)
-tickers_samples = np.random.choice(TOP_N - 1, num_samples)
+tickers_samples = np.random.choice(SAMPLE_FROM_TOP, num_samples)
 
 for i in range(num_samples):
     date_idx = dates_samples[i]
