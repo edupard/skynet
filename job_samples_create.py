@@ -38,5 +38,5 @@ for i in range(num_samples):
     ticker = sample_stocks[date_idx, ticker_idx]
     if ticker == "SPY" or ticker == "ZXZZT":
         continue
-    samples.append((batch_id, ticker, i_date))
+    samples.append((batch_id, ticker, i_date, "all"))
 repo.create_multi(samples)
