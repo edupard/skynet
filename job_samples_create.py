@@ -13,7 +13,7 @@ sample_dates_data = np.genfromtxt(tmp_samples_file, delimiter=',', skip_header=1
 os.remove(tmp_samples_file)
 
 tmp_sample_stocks_file = file_storage.get_file(constants.DATA_BUCKET_NAME, f"sample_stocks.csv")
-sample_stocks = np.genfromtxt(tmp_sample_stocks_file, delimiter=',', dtype='U20', skip_header=1)
+sample_stocks = np.genfromtxt(tmp_sample_stocks_file, delimiter=',', dtype='U20')
 os.remove(tmp_sample_stocks_file)
 
 batch_id = int(sys.argv[1])
