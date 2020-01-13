@@ -30,6 +30,7 @@ date_prob = stocks_per_day / np.sum(stocks_per_day)
 dates_samples = np.random.choice(total_days, num_samples, p=date_prob)
 tickers_samples = np.random.choice(SAMPLE_FROM_TOP, num_samples)
 
+samples = []
 for i in range(num_samples):
     date_idx = dates_samples[i]
     ticker_idx = tickers_samples[i]
@@ -37,4 +38,5 @@ for i in range(num_samples):
     ticker = sample_stocks[date_idx, ticker_idx]
     if ticker == "SPY" or ticker == "ZXZZT":
         continue
-    repo.create(batch_id, ticker, i_date)
+    samples.append((batch_id, ticker, i_date))
+repo.create_multi(samples)

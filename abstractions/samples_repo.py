@@ -10,6 +10,19 @@ class SamplesRepo:
     def __init__(self):
         self.db = datastore.Client('skynet-1984')
 
+    def create_multi(self, samples):
+        entities = []
+        for batch_id, ticker, i_date in samples:
+            entity = datastore.Entity(key=self.db.key('samples'))
+            entity['batch_id'] = batch_id
+            entity['ticker'] = ticker
+            entity['date'] = i_date
+            entities.append(entity)
+        chunks = create_chunks(entities, 500)
+        for chunk in chunks:
+            self.db.put_multi(chunk)
+
+
     def create(self, batch_id, ticker, i_date):
         entity = datastore.Entity(key=self.db.key('samples'))
         entity['batch_id'] = batch_id
