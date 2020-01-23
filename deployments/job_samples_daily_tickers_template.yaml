@@ -1,17 +1,17 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: samples-data
+  name: samples-daily-tickers
   labels:
-    jobgroup: samples-data
+    jobgroup: samples-daily-tickers
 spec:
   completions: 1
   parallelism: 1
   template:
     metadata:
-      name: samples-data
+      name: samples-daily-tickers
       labels:
-        jobgroup: samples-data
+        jobgroup: samples-daily-tickers
     spec:
       volumes:
         - name: secret-volume
@@ -21,7 +21,7 @@ spec:
         - name: samples-data
           image: gcr.io/skynet-1984/skynet:__VERSION__
           command: ["python"]
-          args: ["job_samples_data.py"]
+          args: ["job_samples_daily_tickers.py"]
           volumeMounts:
             - name: secret-volume
               readOnly: true
