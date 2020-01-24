@@ -37,6 +37,12 @@ class PreprocessPrices(Resource):
         jobs.schedule_preprocess()
         return 'Success'
 
+@ns_tasks.route('/samples_data_concat')
+class SamplesDataConcat(Resource):
+    def get(self):
+        jobs.schedule_samples_data_concat()
+        return 'Success'
+
 @ns_tasks.route('/concat_daily_prices')
 class ConcatDailyPrices(Resource):
     def get(self):

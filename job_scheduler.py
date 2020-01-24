@@ -5,6 +5,7 @@ DOWNLOAD_QUEUE = "download"
 TRANSPOSE_QUEUE = "transpose"
 CONCAT_QUEUE = "concat"
 PREPROCESS_QUEUE = "preprocess"
+CONCAT_SAMPLES_DATA_QUEUE = "concat-data-samples"
 
 def schedule_download():
     df = get_tickers()
@@ -17,6 +18,12 @@ def schedule_transpose():
 def schedule_preprocess():
     df = get_tickers()
     push_job_queue_items(PREPROCESS_QUEUE, df[TICKER_COLUMN].values)
+
+def schedule_samples_data_concat():
+    batches = []
+    for batch_id in range(1, 101):
+        batches.append(str(batch_id))
+    push_job_queue_items(CONCAT_SAMPLES_DATA_QUEUE, batches)
 
 def schedule_concat():
     dates = []

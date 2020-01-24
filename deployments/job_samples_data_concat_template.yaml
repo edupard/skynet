@@ -1,0 +1,32 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: samples-data-concat
+  labels:
+    jobgroup: samples-data-concat
+spec:
+  completions: 20
+  parallelism: 20
+  template:
+    metadata:
+      name: samples-data-concat
+      labels:
+        jobgroup: samples-data-concat
+    spec:
+      volumes:
+        - name: secret-volume
+          secret:
+            secretName: hinton-svc-key
+      containers:
+        - name: concat
+          image: gcr.io/skynet-1984/skynet:__VERSION__
+          command: ["python"]
+          args: ["job_samples_data_concat.py"]
+          volumeMounts:
+            - name: secret-volume
+              readOnly: true
+              mountPath: "/etc/secret-volume"
+          env:
+            - name: GOOGLE_APPLICATION_CREDENTIALS
+              value: /etc/secret-volume/key
+      restartPolicy: Never
