@@ -50,6 +50,8 @@ def collect_data(ticker, batch_data_dict, data):
     for sample in samples:
         batch_id = sample['batch_id']
         date = sample['date']
+        if date not in dates_dict:
+            continue
         end_idx = dates_dict[date]
         if end_idx < (TS - 1):
             continue
