@@ -8,6 +8,7 @@ import csv
 import uuid
 import sys
 from abstractions.tiingo import TICKER_COLUMN, get_tickers
+from tickers_util import get_tickers_chunk
 
 
 def write_data(daily_data):
@@ -71,19 +72,11 @@ def collect_data(ticker, daily_data, data):
             daily_data[date] = arr
         arr.append([ticker, o, h, l, c, v, a_o, a_h, a_l, a_c, a_v, div, split])
 
-index = int(sys.argv[1])
-workers = 75
-df = get_tickers()
-tickers = df[TICKER_COLUMN].values
-total = len(tickers)
-batch_size = (total // workers) + 1
-start = index * batch_size
-stop = start + batch_size
-to_process = tickers[start: stop]
+worker_index, tickers = get_tickers_chunk(75)
 
 daily_data = {}
 
-for ticker in to_process:
+for ticker in tickers:
     tmp_file_name = file_storage.get_file(constants.DATA_BUCKET_NAME, f"stocks/{ticker}.csv")
     if tmp_file_name is None:
         continue

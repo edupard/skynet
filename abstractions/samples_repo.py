@@ -1,10 +1,5 @@
 from google.cloud import datastore
-
-
-def create_chunks(l, n):
-    # looping till length l
-    for i in range(0, len(l), n):
-        yield l[i:i + n]
+from abstractions.chunks import create_chunks
 
 class SamplesRepo:
     def __init__(self):
@@ -27,8 +22,6 @@ class SamplesRepo:
         query = self.db.query(kind='samples')
         query.add_filter('ticker', '=', ticker)
         return list(query.fetch())
-
-
 
     def remove(self, batch_id):
         query = self.db.query(kind='samples')
