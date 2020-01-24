@@ -16,6 +16,7 @@ DIM = 22
 
 def write_data(worker_idx, repo: BatchChunksRepo, batch_data_dict):
     for batch_id, data in batch_data_dict.items():
+        log(f"{worker_idx}: writing {batch_id} batch data")
         # create unique id
         sUuid = str(uuid.uuid1())
 
@@ -74,6 +75,7 @@ def collect_data(ticker, batch_data_dict, data):
 worker_idx, tickers = get_tickers_chunk(300)
 
 # make job idempotent
+log(f"{worker_idx}: cleanup")
 repo = BatchChunksRepo()
 chunks = repo.get_by_worker(worker_idx)
 for chunk in chunks:
@@ -87,7 +89,7 @@ batch_data_dict = {}
 ticker_idx = 0
 for ticker in tickers:
     ticker_idx = ticker_idx + 1
-    log(f"Processing {ticker} #{ticker_idx}")
+    log(f"{worker_idx}: processing {ticker} #{ticker_idx}")
     tmp_file_name_00 = file_storage.get_file(constants.DATA_BUCKET_NAME, f"preprocessed/{ticker}_0.csv")
     if tmp_file_name_00 is None:
         continue
@@ -127,5 +129,4 @@ for ticker in tickers:
 
     collect_data(ticker, batch_data_dict, data)
 
-log(f"Start writing data worker: {worker_idx}")
 write_data(worker_idx, repo, batch_data_dict)
