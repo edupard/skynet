@@ -34,4 +34,6 @@ while True:
     # cleanup - remove tmp file
     os.remove("tmp.npy")
 
+    job_queue.ack(jobs.CONCAT_SAMPLES_DATA_QUEUE, to_ack)
+
 

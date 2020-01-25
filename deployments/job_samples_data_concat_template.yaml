@@ -5,8 +5,8 @@ metadata:
   labels:
     jobgroup: samples-data-concat
 spec:
-  completions: 20
-  parallelism: 20
+  completions: 10
+  parallelism: 10
   template:
     metadata:
       name: samples-data-concat
