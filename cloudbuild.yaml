@@ -15,10 +15,10 @@ steps:
     - '-c'
     - |
       source version.sh
-      gcloud container clusters get-credentials --project="skynet-1984" --zone="us-central1-a" "virgo"
+      gcloud container clusters get-credentials --project="skynet-1984" --zone="us-central1-a" "tpu"
       sed -e "s|__VERSION__|$COMMIT_SHA|g" deployments/web_template.yaml | tee deployments/web.yaml
       cat deployments/web.yaml
       kubectl apply -f - <deployments/web.yaml
   env:
     - 'CLOUDSDK_COMPUTE_ZONE=us-central1-a'
-    - 'CLOUDSDK_CONTAINER_CLUSTER=virgo'
+    - 'CLOUDSDK_CONTAINER_CLUSTER=tpu'
