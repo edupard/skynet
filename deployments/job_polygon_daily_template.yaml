@@ -1,0 +1,37 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: polygon-daily-__INDEX__
+  labels:
+    jobgroup: polygon-daily
+spec:
+  completions: 1
+  backoffLimit: 1
+  template:
+    metadata:
+      name: polygon-daily-__INDEX__
+      labels:
+        jobgroup: polygon-daily
+    spec:
+      volumes:
+        - name: secret-volume
+          secret:
+            secretName: hinton-svc-key
+      containers:
+        - name: polygon-daily-__INDEX__
+          image: gcr.io/skynet-1984/skynet:__VERSION__
+          command: ["python"]
+          args: ["job_polygon_daily.py", "__INDEX__"]
+          volumeMounts:
+            - name: secret-volume
+              readOnly: true
+              mountPath: "/etc/secret-volume"
+          env:
+            - name: GOOGLE_APPLICATION_CREDENTIALS
+              value: /etc/secret-volume/key
+            - name: POLYGON_API_KEY
+                valueFrom:
+                  secretKeyRef:
+                    name: polygon-credentials
+                    key: token
+      restartPolicy: Never

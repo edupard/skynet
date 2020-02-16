@@ -11,7 +11,7 @@ ENV PATH /env/bin:$PATH
 ADD . /app
 
 # install requirements
-RUN pip install -r /app/requirements.txt
+RUN pip install -r /app/requirements.txt --no-cache-dir
 
 # set working directory
 WORKDIR /app
