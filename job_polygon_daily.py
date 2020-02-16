@@ -37,7 +37,12 @@ for i_date in i_spy_dates:
 
   s_date = date.strftime("%Y-%m-%d")
   print(s_date)
-  response = requests.get(f'https://api.polygon.io//v2/aggs/grouped/locale/us/market/stocks/{s_date}', params = params, timeout=60, stream=True)
+  while True:
+    response = requests.get(f'https://api.polygon.io//v2/aggs/grouped/locale/us/market/stocks/{s_date}', params = params, timeout=60, stream=True)
+    if response.status_code == 200:
+      break
+    else:
+      print(response)
   json = response.json()
   if json['status'] == 'OK':
     for dp in json['results']:
