@@ -30,8 +30,8 @@ spec:
             - name: GOOGLE_APPLICATION_CREDENTIALS
               value: /etc/secret-volume/key
             - name: POLYGON_API_KEY
-                valueFrom:
-                  secretKeyRef:
-                    name: polygon-credentials
-                    key: token
+              valueFrom:
+                secretKeyRef:
+                  name: polygon-credentials
+                  key: token
       restartPolicy: Never

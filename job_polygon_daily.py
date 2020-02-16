@@ -35,11 +35,9 @@ for i_date in i_spy_dates:
   if date.year != year:
     continue
 
-  curr_year = year
-
   s_date = date.strftime("%Y-%m-%d")
   print(s_date)
-  response = requests.get(f'https://api.polygon.io//v2/aggs/grouped/locale/us/market/stocks/{s_date}', params = params)
+  response = requests.get(f'https://api.polygon.io//v2/aggs/grouped/locale/us/market/stocks/{s_date}', params = params, timeout=60, stream=True)
   json = response.json()
   if json['status'] == 'OK':
     for dp in json['results']:
@@ -51,6 +49,7 @@ for i_date in i_spy_dates:
       l.append(dp['l'])
       c.append(dp['c'])
   else:
+    print(response)
     raise Exception(f'Failed to get data for {s_date}')
 
 df = pd.DataFrame({'d': d, 't': t, 'v': v, 'o': o, 'h': h, 'l': l, 'c': c})
