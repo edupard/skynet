@@ -14,6 +14,7 @@ class GcsClient():
         if blob is None:
             return False
         blob.download_to_filename(local_file_path)
+        return True
 
     def remove(self, remote_file_path):
         blob = self.bucket.get_blob(remote_file_path)

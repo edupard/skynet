@@ -6,7 +6,7 @@ import numpy as np
 import os
 import uuid
 from abstractions.log import log
-from tickers_util import get_tickers_chunk
+from utils.batch_utils import get_worker_tickers
 
 TS = 100
 DIM = 22
@@ -71,7 +71,7 @@ def collect_data(ticker, batch_data_dict, data):
         idx = idx + 1
         batch_data_dict[batch_id] = (idx, capacity, arr)
 
-worker_idx, tickers = get_tickers_chunk(300)
+worker_idx, tickers = get_worker_tickers(300)
 
 # make job idempotent
 log(f"{worker_idx}: cleanup")
