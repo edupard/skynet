@@ -1,6 +1,6 @@
-import abstractions.constants as constants
+import utils.constants as constants
 from abstractions.samples_repo import SamplesRepo
-import abstractions.file_storage as file_storage
+import utils.gcs as file_storage
 import numpy as np
 import abstractions.log as log
 import os

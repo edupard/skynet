@@ -1,8 +1,8 @@
-import abstractions.job_queue as job_queue
+import utils.messaging as job_queue
 import job_scheduler as jobs
 from abstractions.log import log
-import abstractions.file_storage as file_storage
-import abstractions.constants as constants
+import utils.gcs as file_storage
+import utils.constants as constants
 from abstractions.daily_chunks_repo import ChunksRepo
 import os
 import numpy as np

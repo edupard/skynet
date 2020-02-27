@@ -1,13 +1,11 @@
 from abstractions.daily_chunks_repo import ChunksRepo
-import abstractions.constants as constants
-import abstractions.file_storage as file_storage
+import utils.constants as constants
+import utils.gcs as file_storage
 import numpy as np
 import os
 import tempfile
 import csv
 import uuid
-import sys
-from abstractions.tiingo import TICKER_COLUMN, get_tickers
 from tickers_util import get_tickers_chunk
 
 

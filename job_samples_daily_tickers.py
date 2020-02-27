@@ -1,12 +1,12 @@
-import abstractions.constants as constants
-import abstractions.file_storage as file_storage
+import utils.constants as constants
+import utils.gcs as file_storage
 import numpy as np
 import abstractions.log as log
 import tempfile
 import os
 import time
 
-from abstractions.constants import TOP_N, PRICE_LIMIT
+from utils.constants import TOP_N, PRICE_LIMIT
 
 def save_samples_data():
     spy_tmp_file_name = file_storage.get_file(constants.DATA_BUCKET_NAME, "stocks/SPY.csv")

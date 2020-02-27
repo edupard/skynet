@@ -21,7 +21,7 @@ spec:
         - name: download
           image: gcr.io/skynet-1984/skynet:__VERSION__
           command: ["python"]
-          args: ["job_download.py"]
+          args: ["download.py"]
           volumeMounts:
             - name: secret-volume
               readOnly: true

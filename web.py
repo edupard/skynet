@@ -1,63 +1,27 @@
 from flask import Flask
 from flask_restplus import Api, Resource
 
-import abstractions.tiingo
-from abstractions.env import get_env_variables
-import job_scheduler as jobs
+import utils.messaging as messaging
+import utils.gcs as gcs
+import pandas as pd
+import os
 
 app = Flask(__name__)
 api = Api(app=app)
 ns_tasks = api.namespace('jobs', description='Jobs to perform')
 
 if __name__ == "__main__":
-  app.run(debug=True)
+    app.run(debug=True)
 
-@ns_tasks.route('/download_tickers')
-class DownloadTickers(Resource):
+
+@ns_tasks.route('/push_tickers')
+class PushTickers(Resource):
     def get(self):
-        abstractions.tiingo.save_tickers()
+        if not os.path.exists('/tmp/tickers.csv'):
+            gcs_client = gcs.GcsClient()
+            gcs_client.get('tiingo/tickers.csv', '/tmp/tickers.csv')
+        df = pd.read_csv('/tmp/tickers.csv')
+
+        publisher = messaging.Publisher()
+        publisher.send_messages('tickers', df.ticker.values)
         return 'Success'
-
-
-@ns_tasks.route('/download_prices')
-class DownloadPrices(Resource):
-    def get(self):
-        jobs.schedule_download()
-        return 'Success'
-
-@ns_tasks.route('/transpose_prices')
-class TransposePrices(Resource):
-    def get(self):
-        jobs.schedule_transpose()
-        return 'Success'
-
-@ns_tasks.route('/preprocess_prices')
-class PreprocessPrices(Resource):
-    def get(self):
-        jobs.schedule_preprocess()
-        return 'Success'
-
-@ns_tasks.route('/samples_data_concat')
-class SamplesDataConcat(Resource):
-    def get(self):
-        jobs.schedule_samples_data_concat()
-        return 'Success'
-
-@ns_tasks.route('/concat_daily_prices')
-class ConcatDailyPrices(Resource):
-    def get(self):
-        jobs.schedule_concat()
-        return 'Success'
-
-@ns_tasks.route('/env')
-class PrintEnvVariables(Resource):
-    def get(this):
-        vars = [
-            'RMQ_HOST',
-            'RMQ_PORT',
-            'RMQ_USERNAME',
-            'RMQ_PASSWORD',
-            'TIINGO_API_KEY',
-            'GOOGLE_APPLICATION_CREDENTIALS'
-        ]
-        return get_env_variables(vars)

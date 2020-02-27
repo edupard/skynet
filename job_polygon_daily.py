@@ -3,8 +3,8 @@ import datetime
 import pandas as pd
 import numpy as np
 import os
-import abstractions.file_storage as file_storage
-import abstractions.constants as constants
+import utils.gcs as file_storage
+import utils.constants as constants
 import sys
 
 spy_file_name = file_storage.get_file(constants.DATA_BUCKET_NAME, f"SPY.csv")

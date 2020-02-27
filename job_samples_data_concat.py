@@ -1,10 +1,10 @@
 from abstractions.batch_chunks_repo import BatchChunksRepo
-import abstractions.constants as constants
-import abstractions.file_storage as file_storage
+import utils.constants as constants
+import utils.gcs as file_storage
 import numpy as np
 import os
 import job_scheduler as jobs
-import abstractions.job_queue as job_queue
+import utils.messaging as job_queue
 
 repo = BatchChunksRepo()
 
