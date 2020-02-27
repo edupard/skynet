@@ -31,8 +31,8 @@ spec:
             - name: GOOGLE_APPLICATION_CREDENTIALS
               value: /etc/secret-volume/key
             - name: TIINGO_API_KEY
-                valueFrom:
-                  secretKeyRef:
-                    name: tiingo-credentials
-                    key: token
+              valueFrom:
+                secretKeyRef:
+                  name: tiingo-credentials
+                  key: token
       restartPolicy: Never
