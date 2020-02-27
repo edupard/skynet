@@ -1,27 +1,28 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: concat
+  name: __JOB_NAME__-__INDEX__
   labels:
-    jobgroup: concat
+    jobgroup: __JOB_NAME__
 spec:
-  completions: 20
-  parallelism: 20
+  completions: __PARALLELISM__
+  parallelism: __PARALLELISM__
+  backoffLimit: 1
   template:
     metadata:
-      name: concat
+      name: __JOB_NAME__
       labels:
-        jobgroup: concat
+        jobgroup: __JOB_NAME__
     spec:
       volumes:
         - name: secret-volume
           secret:
             secretName: hinton-svc-key
       containers:
-        - name: concat
+        - name: __JOB_NAME__
           image: gcr.io/skynet-1984/skynet:__VERSION__
           command: ["python"]
-          args: ["concat_transposed.py"]
+          args: ["__SCRIPT__", "__INDEX__", "__NUM_JOBS__"]
           volumeMounts:
             - name: secret-volume
               readOnly: true
@@ -29,4 +30,9 @@ spec:
           env:
             - name: GOOGLE_APPLICATION_CREDENTIALS
               value: /etc/secret-volume/key
+            - name: TIINGO_API_KEY
+                valueFrom:
+                  secretKeyRef:
+                    name: tiingo-credentials
+                    key: token
       restartPolicy: Never
