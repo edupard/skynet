@@ -21,7 +21,7 @@ spec:
         - name: concat
           image: gcr.io/skynet-1984/skynet:__VERSION__
           command: ["python"]
-          args: ["job_concat.py"]
+          args: ["concat_transposed.py"]
           volumeMounts:
             - name: secret-volume
               readOnly: true

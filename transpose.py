@@ -1,16 +1,18 @@
-from utils.batch_utils import get_worker_tickers
+from utils.batch_utils import get_worker_batch
 import sys
 import utils.gcs as gcs
 import pandas as pd
 
-
 worker_idx = int(sys.argv[1])
 num_workers = int(sys.argv[2])
-tickers = get_worker_tickers(worker_idx, num_workers)
+
+gcs_client = gcs.GcsClient()
+gcs_client.get('tiingo/tickers.csv', '/tmp/tickers.csv')
+df = pd.read_csv('/tmp/tickers.csv')
+tickers = get_worker_batch(worker_idx, num_workers, df.ticker.values)
 
 daily_data = {}
 
-gcs_client = gcs.GcsClient()
 for ticker in tickers:
     if not gcs_client.get(f'tiingo/stocks/{ticker}.csv', f'/tmp/{ticker}.csv'):
         continue
