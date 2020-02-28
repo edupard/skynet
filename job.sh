@@ -20,12 +20,14 @@ export SCRIPT=concat-daily-chunks.py
 
 mkdir tmp
 
-for (( INDEX=0; INDEX<NUM_JOBS; INDEX++ ))
+for INDEX in {52,60}
+#for (( INDEX=0; INDEX<NUM_JOBS; INDEX++ ))
 do
 	sed -e "s|__VERSION__|$COMMIT_SHA|g" -e "s|__INDEX__|$INDEX|g" -e "s|__NUM_JOBS__|$NUM_JOBS|g" -e "s|__JOB_NAME__|$JOB_NAME|g" -e "s|__PARALLELISM__|$PARALLELISM|g" -e "s|__SCRIPT__|$SCRIPT|g" job.yaml | tee tmp/job_$INDEX.yaml
 done
 
-for (( INDEX=0; INDEX<NUM_JOBS; INDEX++ ))
+for INDEX in {52,60}
+#for (( INDEX=0; INDEX<NUM_JOBS; INDEX++ ))
 do
 	kubectl apply -f tmp/job_$INDEX.yaml
 done
