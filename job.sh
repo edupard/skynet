@@ -24,7 +24,7 @@ export COMMIT_SHA=`git rev-parse HEAD`
 #export PARALLELISM=20
 #export SCRIPT=preprocess.py
 
-# preprocess
+# sample stocks
 export JOB_NAME=sample-stocks
 export NUM_JOBS=27
 export PARALLELISM=1

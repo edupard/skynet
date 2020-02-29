@@ -70,7 +70,7 @@ for i_date in i_dates:
             break
 
     lfp = f'/tmp/{i_date}.csv'
-    rfp = f'tiingo/sample_stocks/{i_date}.csv'
+    rfp = f'tiingo/stock_samples/{i_date}.csv'
     pd.DataFrame({'ticker': selection}).to_csv(lfp, index=False)
     gcs_client.save(lfp, rfp)
 
