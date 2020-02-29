@@ -19,7 +19,8 @@ tickers_df = pd.read_csv('/tmp/tickers.csv')
 
 num_tickers = len(tickers_df.ticker.values)
 
-stock_traded_mask = np.zeros((num_tickers, 64), dtype=np.bool)
+gv = np.zeros((num_tickers, 64), dtype=np.float)
+c = np.zeros((num_tickers), dtype=np.float)
 
 ticker_idx_dict = {}
 for index, row in tickers_df.iterrows():
@@ -39,31 +40,39 @@ i_dates = get_worker_batch(worker_idx, num_workers, i_spy_dates, lag = 63)
 for i_date in i_dates:
     i = i + 1
 
-    stock_traded_mask = np.roll(stock_traded_mask, -1, axis=1)
-    stock_traded_mask[:, -1] = False
+    gv = np.roll(gv, -1, axis = 1)
+    gv[:,-1] = 0
+
+    c[:] = 0
 
     gcs_client.get(f'tiingo/daily/{i_date}.csv', f'/tmp/daily/{i_date}.csv')
     daily_df = pd.read_csv(f'/tmp/daily/{i_date}.csv')
-    daily_df['gv'] = daily_df.v.values * (daily_df.h.values + daily_df.l.values + daily_df.c.values) / 3
-    daily_df = daily_df.sort_values(by=['gv'], ascending=False)
 
-    for index, row in daily_df.iterrows():
-        if row.v > 0:
-            stock_traded_mask[get_idx_by_ticker(row.ticker), -1] = True
+    idx_arr = np.array(list(map(lambda t: get_idx_by_ticker(t), daily_df.ticker.values)), dtype = np.int)
+    gv[idx_arr,-1] = daily_df.v.values * (daily_df.h.values + daily_df.l.values + daily_df.c.values) / 3
+    c[idx_arr] = daily_df.c
 
     # not enough data
     if i < 64:
         continue
 
+    gv_avg = np.average(gv, axis=1)
+    idx_by_avg_gv_asc = np.argsort(gv_avg)
+    idx_by_avg_gv_desc = idx_by_avg_gv_asc[::-1]
+
     selection = []
-    for index, row in daily_df.iterrows():
-        ticker = row.ticker
+    for idx in idx_by_avg_gv_desc:
+        ticker = get_ticker_by_idx(idx)
         if ticker == 'SPY' or ticker == 'ZXZZT' or ticker == '0001753539':
             continue
         # do not trade warrants & preferred stocks
         if "-P" in ticker or "-W" in ticker:
             continue
-        if np.all(stock_traded_mask[get_idx_by_ticker(ticker), :]):
+        # do not trade pink sheets
+        if c[idx] < 5.0:
+            continue
+        # should be always traded before
+        if np.all(gv[idx, :] > 0):
             if ticker not in selection:
                 selection.append(ticker)
         if len(selection) == 500:
