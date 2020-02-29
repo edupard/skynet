@@ -31,16 +31,16 @@ export COMMIT_SHA=`git rev-parse HEAD`
 #export SCRIPT=sample_stocks.py
 
 # create batch chunks
-export JOB_NAME=create-batch-chunks
-export NUM_JOBS=75
-export PARALLELISM=1
-export SCRIPT=create_batch_chunks.py
-
-# concat batch chunks
-#export JOB_NAME=concat-batch-chunks
+#export JOB_NAME=create-batch-chunks
 #export NUM_JOBS=75
 #export PARALLELISM=1
-#export SCRIPT=concat_batch_chunks.py
+#export SCRIPT=create_batch_chunks.py
+
+# concat batch chunks
+export JOB_NAME=concat-batch-chunks
+export NUM_JOBS=35
+export PARALLELISM=1
+export SCRIPT=concat_batch_chunks.py
 
 mkdir tmp
 

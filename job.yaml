@@ -21,6 +21,11 @@ spec:
       containers:
         - name: __JOB_NAME__
           image: gcr.io/skynet-1984/skynet:__VERSION__
+          resources:
+            limits:
+              memory: "2000Mi"
+            requests:
+              memory: "1000Mi"
           command: ["python"]
           args: ["__SCRIPT__", "__INDEX__", "__NUM_JOBS__"]
           volumeMounts:

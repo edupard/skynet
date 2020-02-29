@@ -10,7 +10,7 @@ batch_id = worker_idx
 gcs_client = gcs.GcsClient()
 
 FROM = 1993
-TO = 2008
+TO = 2021
 
 chunks = []
 for i in range(75):
