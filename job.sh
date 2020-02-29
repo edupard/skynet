@@ -25,10 +25,16 @@ export COMMIT_SHA=`git rev-parse HEAD`
 #export SCRIPT=preprocess.py
 
 # sample stocks
-export JOB_NAME=sample-stocks
-export NUM_JOBS=27
+#export JOB_NAME=sample-stocks
+#export NUM_JOBS=27
+#export PARALLELISM=1
+#export SCRIPT=sample_stocks.py
+
+# create batch chunks stocks
+export JOB_NAME=create-batch-chunks
+export NUM_JOBS=75
 export PARALLELISM=1
-export SCRIPT=sample_stocks.py
+export SCRIPT=create_batch_chunks.py
 
 mkdir tmp
 
