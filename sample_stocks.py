@@ -51,17 +51,21 @@ for i_date in i_dates:
         if row.v > 0:
             stock_traded_mask[get_idx_by_ticker(row.ticker), -1] = True
 
-    # not enought data
+    # not enough data
     if i < 64:
         continue
 
     selection = []
     for index, row in daily_df.iterrows():
         ticker = row.ticker
-        if ticker == 'SPY' or ticker == 'ZXZZT':
+        if ticker == 'SPY' or ticker == 'ZXZZT' or ticker == '0001753539':
+            continue
+        # do not trade warrants & preferred stocks
+        if "-P" in ticker or "-W" in ticker:
             continue
         if np.all(stock_traded_mask[get_idx_by_ticker(ticker), :]):
-            selection.append(ticker)
+            if ticker not in selection:
+                selection.append(ticker)
         if len(selection) == 500:
             break
 
