@@ -30,22 +30,28 @@ export COMMIT_SHA=`git rev-parse HEAD`
 #export PARALLELISM=1
 #export SCRIPT=sample_stocks.py
 
-# create batch chunks stocks
+# create batch chunks
 export JOB_NAME=create-batch-chunks
 export NUM_JOBS=75
 export PARALLELISM=1
 export SCRIPT=create_batch_chunks.py
 
+# concat batch chunks
+#export JOB_NAME=concat-batch-chunks
+#export NUM_JOBS=75
+#export PARALLELISM=1
+#export SCRIPT=concat_batch_chunks.py
+
 mkdir tmp
 
-for INDEX in {69,1,17,4,71,8}
-#for (( INDEX=0; INDEX<NUM_JOBS; INDEX++ ))
+#for INDEX in {69,1,17,4,71,8}
+for (( INDEX=0; INDEX<NUM_JOBS; INDEX++ ))
 do
 	sed -e "s|__VERSION__|$COMMIT_SHA|g" -e "s|__INDEX__|$INDEX|g" -e "s|__NUM_JOBS__|$NUM_JOBS|g" -e "s|__JOB_NAME__|$JOB_NAME|g" -e "s|__PARALLELISM__|$PARALLELISM|g" -e "s|__SCRIPT__|$SCRIPT|g" job.yaml | tee tmp/job_$INDEX.yaml
 done
 
-for INDEX in {69,1,17,4,71,8}
-#for (( INDEX=0; INDEX<NUM_JOBS; INDEX++ ))
+#for INDEX in {69,1,17,4,71,8}
+for (( INDEX=0; INDEX<NUM_JOBS; INDEX++ ))
 do
 	kubectl apply -f tmp/job_$INDEX.yaml
 done
