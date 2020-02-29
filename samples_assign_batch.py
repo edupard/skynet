@@ -11,15 +11,17 @@ rfp = f'tiingo/stock_samples.csv'
 gcs_client.get(rfp, lfp)
 df = pd.read_csv(lfp)
 
-UP_TO_YEAR = 2021
-UP_TO_DATE = UP_TO_YEAR * 10000 + 101
+FROM = 1993
+TO = 2021
+FROM_DATE = 1993 * 10000 + 101
+TO_DATE = TO * 10000 + 101
 
-df = df.loc[df.date < UP_TO_DATE]
+df = df.loc[(df.date < TO_DATE) & (df.date >= FROM_DATE)]
 
-NUM_BATCHES = (UP_TO_YEAR - 1993) * 500 * 252 // 100000
+NUM_BATCHES = (TO - FROM) * 500 * 252 // 100000
 df['batchId'] = np.random.randint(0, NUM_BATCHES, df.shape[0])
-lfp = f"/tmp/samples_up_to_{UP_TO_YEAR}.csv"
-rfp = f"tiingo/samples_up_to_{UP_TO_YEAR}.csv"
+lfp = f"/tmp/samples_{FROM}_{TO}.csv"
+rfp = f"tiingo/samples_{FROM}_{TO}.csv"
 df.to_csv(lfp, index=False)
 
 gcs_client.save(lfp, rfp)

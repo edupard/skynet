@@ -13,10 +13,11 @@ gcs_client.get('tiingo/tickers.csv', '/tmp/tickers.csv')
 df = pd.read_csv('/tmp/tickers.csv')
 tickers = get_worker_batch(worker_idx, num_workers, df.ticker.values)
 
-UP_TO_YEAR = 2008
+FROM = 1993
+TO = 2008
 
-lfp = f"/tmp/samples_up_to_{UP_TO_YEAR}.csv"
-rfp = f"tiingo/samples_up_to_{UP_TO_YEAR}.csv"
+lfp = f"/tmp/samples_{FROM}_{TO}.csv"
+rfp = f"tiingo/samples_{FROM}_{TO}.csv"
 gcs_client.get(rfp, lfp)
 samples_df = pd.read_csv(lfp)
 
@@ -34,7 +35,7 @@ def write_data(worker_idx, batch_data_dict):
 
         # save np array
         lfp = f'/tmp/{batch_id}_{worker_idx}.npy'
-        rfp = f'tiingo/batch_chunks/up_to_{UP_TO_YEAR}/{batch_id}_{worker_idx}.npy'
+        rfp = f'tiingo/batch_chunks/{FROM}_{TO}/{batch_id}_{worker_idx}.npy'
         np.save(lfp, slice_to_save)
 
         gcs_client.save(lfp, rfp)
