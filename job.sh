@@ -38,7 +38,7 @@ export COMMIT_SHA=`git rev-parse HEAD`
 
 # concat batch chunks
 export JOB_NAME=concat-batch-chunks
-export NUM_JOBS=35
+export NUM_JOBS=16
 export PARALLELISM=1
 export SCRIPT=concat_batch_chunks.py
 

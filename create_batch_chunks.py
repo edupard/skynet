@@ -13,7 +13,7 @@ gcs_client.get('tiingo/tickers.csv', '/tmp/tickers.csv')
 df = pd.read_csv('/tmp/tickers.csv')
 tickers = get_worker_batch(worker_idx, num_workers, df.ticker.values)
 
-FROM = 1993
+FROM = 2008
 TO = 2021
 
 lfp = f"/tmp/samples_{FROM}_{TO}.csv"
